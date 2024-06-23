@@ -1,4 +1,5 @@
 # DamInfo
+[![Java CI with Maven](https://github.com/adriandeleon/dam-info/actions/workflows/maven.yml/badge.svg)](https://github.com/adriandeleon/dam-info/actions/workflows/maven.yml)
 
 This project can be used as a starting point to create your own Vaadin application with Spring Boot.
 It contains all the necessary configuration and some placeholder files to get you started.
