@@ -9,6 +9,6 @@ public class DamRestController {
 
     @GetMapping("/api/dams")
     public ResponseEntity<String> damns() {
-        return ResponseEntity.ok("Hello API");
+        return ResponseEntity.ok("Hello Dam API");
     }
 }
