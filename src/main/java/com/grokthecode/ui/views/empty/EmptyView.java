@@ -1,6 +1,6 @@
-package com.grokthecode.views.empty;
+package com.grokthecode.ui.views.empty;
 
-import com.grokthecode.views.MainLayout;
+import com.grokthecode.ui.views.MainLayout;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;

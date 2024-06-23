@@ -1,7 +1,7 @@
-package com.grokthecode.views;
+package com.grokthecode.ui.views;
 
-import com.grokthecode.views.empty.EmptyView;
-import com.grokthecode.views.myview.MyViewView;
+import com.grokthecode.ui.views.empty.EmptyView;
+import com.grokthecode.ui.views.myview.MyViewView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;

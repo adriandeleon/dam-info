@@ -1,6 +1,6 @@
-package com.grokthecode.views.myview;
+package com.grokthecode.ui.views.myview;
 
-import com.grokthecode.views.MainLayout;
+import com.grokthecode.ui.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
