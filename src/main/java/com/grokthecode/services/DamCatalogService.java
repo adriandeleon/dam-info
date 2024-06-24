@@ -5,7 +5,6 @@ import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
 import jakarta.transaction.Transactional;
-import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -115,7 +114,7 @@ public class DamCatalogService {
             damCatalogEntity.setLlenano(presasDto.getLlenano());*/
 
             if (damExistsBySihKey(damCatalogEntity.getSihKey())) {
-                if(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).isPresent()) {
+                if(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).isPresent()) { //TODO: I don't like this.
                     damCatalogEntity.setId(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).get().getId());
                     updateDamCatalog(damCatalogEntity);
                 }
@@ -144,7 +143,7 @@ public class DamCatalogService {
     }
 
     public boolean damExistsBySihKey(final String sihKey) {
-        Validate.notBlank(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_BLANK);
+        Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         return damCatalogRepository.findBySihKey(sihKey).isPresent();
     }
