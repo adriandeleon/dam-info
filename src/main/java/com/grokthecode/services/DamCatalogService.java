@@ -132,9 +132,15 @@ public class DamCatalogService {
     }
 
     public Optional<DamCatalogEntity> getDamCatalogBySihKey(final String sihKey) {
-        Objects.requireNonNull(sihKey, "damCatalogId" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
+        Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         return damCatalogRepository.findBySihKey(sihKey);
+    }
+
+    public List<DamCatalogEntity> getDamCatalogByState(final String state) {
+        Objects.requireNonNull(state, "state" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
+
+        return List.copyOf(damCatalogRepository.findByState(state));
     }
 
     public boolean damExistsBySihKey(final String sihKey) {
