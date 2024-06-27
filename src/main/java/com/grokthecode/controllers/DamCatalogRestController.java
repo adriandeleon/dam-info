@@ -10,33 +10,33 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
-public class DamRestController {
+public class DamCatalogRestController {
 
-    public DamCatalogService damCatalogService;
+    public final DamCatalogService damCatalogService;
 
-    public  DamRestController(DamCatalogService damCatalogService) {
+    public DamCatalogRestController(final DamCatalogService damCatalogService) {
         this.damCatalogService = damCatalogService;
     }
 
-    @GetMapping("/api/dams")
+    @GetMapping("/api/dams/catalog")
     public ResponseEntity<List<DamCatalogEntity>> damns() {
 
         return ResponseEntity.ok(damCatalogService.listAllDams());
     }
 
-    @GetMapping("/api/dams/sihKey/{sihKey}")
+    @GetMapping("/api/dams/catalog/sihKey/{sihKey}")
     public ResponseEntity<DamCatalogEntity> getDamCatalogBySihKey(@PathVariable final String sihKey) {
 
         return ResponseEntity.ok(damCatalogService.getDamCatalogBySihKey(sihKey).orElseThrow());
     }
 
-    @GetMapping("/api/dams/state/{state}")
+    @GetMapping("/api/dams/catalog/state/{state}")
     public ResponseEntity<List<DamCatalogEntity>> getDamCatalogByState(@PathVariable final String state) {
 
         return ResponseEntity.ok(damCatalogService.getDamCatalogByState(state));
     }
 
-    @GetMapping("/api/catalogs/dams/sync")
+    @GetMapping("/api/dams/catalog/sync")
     public ResponseEntity syncDamCatalog() throws URISyntaxException {
         damCatalogService.syncDamsCatalog();
 

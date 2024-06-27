@@ -89,29 +89,24 @@ public class DamCatalogService {
                 .body(new ParameterizedTypeReference<>() {});
 
         for (final PresasDto presasDto : presasDtoList) {
-            final DamCatalogEntity damCatalogEntity = new DamCatalogEntity();
-
-            damCatalogEntity.setSihKey(presasDto.getClavesih());
-            damCatalogEntity.setOfficialName(presasDto.getNombreoficial());
-            damCatalogEntity.setCommonName(presasDto.getNombrecomun());
-            damCatalogEntity.setState(presasDto.getEstado());
-            damCatalogEntity.setMunicipality(presasDto.getNommunicipio());
-            damCatalogEntity.setCnaRegion(presasDto.getRegioncna());
-            damCatalogEntity.setLatitude(presasDto.getLatitud());
-            damCatalogEntity.setLongitude(presasDto.getLongitud());
-            damCatalogEntity.setUsage(presasDto.getUso());
-            damCatalogEntity.setCurrents(presasDto.getCorriente());
-            damCatalogEntity.setVerterType(presasDto.getTipovertedor());
-            damCatalogEntity.setOperationStartYear(presasDto.getInicioop());
-            damCatalogEntity.setElevationCrown(presasDto.getElevcorona());
-            damCatalogEntity.setFreeBorder(presasDto.getBordolibre());
-            damCatalogEntity.setNAMEElevation(presasDto.getNameelev());
-            damCatalogEntity.setNAMECapacity(presasDto.getNamealmac());
-            damCatalogEntity.setShadeHeight(presasDto.getAlturacortina());
-
-          /*  damCatalogEntity.setElevacionactual(presasDto.getElevacionactual());
-            damCatalogEntity.setAlmacenaactual(presasDto.getAlmacenaactual());
-            damCatalogEntity.setLlenano(presasDto.getLlenano());*/
+            final DamCatalogEntity damCatalogEntity = new DamCatalogEntity(
+                    presasDto.getClavesih(),
+                    presasDto.getNombreoficial(),
+                    presasDto.getNombrecomun(),
+                    presasDto.getEstado(),
+                    presasDto.getNommunicipio(),
+                   presasDto.getRegioncna(),
+                    presasDto.getLatitud(),
+                    presasDto.getLongitud(),
+                    presasDto.getUso(),
+                    presasDto.getCorriente(),
+                    presasDto.getTipovertedor(),
+                    presasDto.getInicioop(),
+                    presasDto.getElevcorona(),
+                    presasDto.getBordolibre(),
+                    presasDto.getNameelev(),
+                    presasDto.getNamealmac(),
+                    presasDto.getAlturacortina());
 
             if (damExistsBySihKey(damCatalogEntity.getSihKey())) {
                 if(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).isPresent()) { //TODO: I don't like this.

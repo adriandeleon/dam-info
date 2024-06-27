@@ -1,13 +1,13 @@
 package com.grokthecode.data.entities;
 
 import com.grokthecode.common.GlobalConstants;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +40,10 @@ public class DamCatalogEntity extends AbstractEntity {
         this.NAMECapacity = NAMECapacity;
         this.shadeHeight = shadeHeight;
     }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotNull(message = "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL)
     @NotBlank(message = "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_BLANK)
@@ -107,4 +111,6 @@ public class DamCatalogEntity extends AbstractEntity {
     @Column(name = "shadeHeight")
     private String shadeHeight;
 
+    @OneToMany(mappedBy = "damCatalogEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DailyMeasurementEntity> dailyMeasurementEntityList;
 }
