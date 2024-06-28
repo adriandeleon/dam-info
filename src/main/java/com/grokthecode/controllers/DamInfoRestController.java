@@ -1,5 +1,6 @@
 package com.grokthecode.controllers;
 
+import com.grokthecode.data.requests.DamInfoDatesRequest;
 import com.grokthecode.data.requests.DamInfoSihKeyRequest;
 import com.grokthecode.data.requests.DamInfoStateRequest;
 import com.grokthecode.data.responses.DamInfoResponse;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Log4j2
@@ -31,6 +33,8 @@ public class DamInfoRestController {
 
     @PostMapping("/api/dams/info/sihKey")
     public ResponseEntity<DamInfoResponse> getAllDamsInfoBySihKey(@RequestBody final DamInfoSihKeyRequest damInfoSihKeyRequest) {
+        Objects.requireNonNull(damInfoSihKeyRequest, "DamInfoSihKeyRequest cannot be null.");
+
         ResponseEntity<DamInfoResponse> responseEntity = null;
         final String sihKey = damInfoSihKeyRequest.sihKey();
 
@@ -47,7 +51,7 @@ public class DamInfoRestController {
             endDate = startDate;
         }
 
-        if( sihKey != null & startDate != null && endDate != null ) {
+        if(sihKey != null & startDate != null) {
             responseEntity = ResponseEntity.ok(damInfoService.getDamsInfoBySihKey(sihKey, startDate, endDate));
         }
 
@@ -60,6 +64,8 @@ public class DamInfoRestController {
 
     @PostMapping("/api/dams/info/state")
     public ResponseEntity<List<DamInfoResponse>> getAllDamsInfoByState(@RequestBody final DamInfoStateRequest damInfoStateRequest) {
+        Objects.requireNonNull(damInfoStateRequest, "DamInfoStateRequest cannot be null.");
+
         ResponseEntity<List<DamInfoResponse>> responseEntity = null;
         final String state = damInfoStateRequest.state();
 
@@ -79,6 +85,29 @@ public class DamInfoRestController {
 
         if( state != null & startDate == null && endDate == null ) {
             responseEntity = ResponseEntity.ok(damInfoService.getDamsInfoByState(state));
+        }
+
+        return responseEntity;
+    }
+
+    @PostMapping("/api/dams/info/dates")
+    public ResponseEntity<List<DamInfoResponse>> getAllDamsInfoByState(@RequestBody final DamInfoDatesRequest damInfoDatesRequest) {
+        Objects.requireNonNull(damInfoDatesRequest, "DamInfoDatesRequest cannot be null.");
+
+        ResponseEntity<List<DamInfoResponse>> responseEntity = null;
+
+        LocalDate startDate = null;
+        try {
+            startDate = LocalDate.parse(damInfoDatesRequest.startDate());
+        } catch (final DateTimeParseException ignored) {}
+
+        LocalDate endDate = null;
+        try {
+            endDate = LocalDate.parse(damInfoDatesRequest.endDate());
+        } catch (final DateTimeParseException ignored) {}
+
+        if(startDate != null && endDate != null ) {
+            responseEntity = ResponseEntity.ok(damInfoService.getDamsInfoByDates(startDate, endDate));
         }
 
         return responseEntity;

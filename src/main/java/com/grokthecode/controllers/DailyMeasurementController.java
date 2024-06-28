@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Log4j2
@@ -34,6 +35,7 @@ public class DailyMeasurementController {
 
     @PostMapping("/api/dams/measurements")
     public ResponseEntity<List<DailyMeasurementEntity>> getDailyMeasurementsByDamId(@RequestBody final DailyMeasurementRequest dailyMeasurementRequest) {
+        Objects.requireNonNull(dailyMeasurementRequest, "dailyMeasurementRequest cannot be null.");
 
         final String sihKey = dailyMeasurementRequest.sihKey();
 
@@ -50,11 +52,11 @@ public class DailyMeasurementController {
             endDate = startDate;
         }
 
-        if(StringUtils.isNotBlank(sihKey) && startDate != null && endDate != null) {
+        if(StringUtils.isNotBlank(sihKey) && startDate != null) {
             return ResponseEntity.ok(dailyMeasurementService.getDailyMeasurements(sihKey, startDate, endDate));
         }
 
-        if(StringUtils.isBlank(sihKey) && startDate != null && endDate != null) {
+        if(StringUtils.isBlank(sihKey) && startDate != null) {
             return ResponseEntity.ok(dailyMeasurementService.getDailyMeasurements(startDate, endDate));
         }
 
@@ -76,6 +78,8 @@ public class DailyMeasurementController {
 
     @GetMapping("/api/dams/measurements/sync/date/{formatedDate}")
     public  ResponseEntity<DailyMeasurementSyncResponse> syncDailyMeasurements(@PathVariable(required = false) String formatedDate) throws URISyntaxException {
+        Objects.requireNonNull(formatedDate, "formatedDate cannot be null.");
+
         final Pair<List<DailyMeasurementEntity>, List<String>> resultPair = dailyMeasurementService.syncDamsDailyFill(formatedDate);
 
         final DailyMeasurementSyncResponse dailyMeasurementSyncResponse =

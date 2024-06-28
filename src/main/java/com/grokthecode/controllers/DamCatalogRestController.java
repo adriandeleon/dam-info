@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Log4j2
@@ -30,12 +31,14 @@ public class DamCatalogRestController {
 
     @GetMapping("/api/dams/catalog/sihKey/{sihKey}")
     public ResponseEntity<DamCatalogEntity> getDamCatalogBySihKey(@PathVariable final String sihKey) {
+        Objects.requireNonNull(sihKey, "sihKey cannot be null.");
 
         return ResponseEntity.ok(damCatalogService.getDamCatalogBySihKey(sihKey).orElseThrow());
     }
 
     @GetMapping("/api/dams/catalog/state/{state}")
     public ResponseEntity<List<DamCatalogEntity>> getDamCatalogByState(@PathVariable final String state) {
+        Objects.requireNonNull(state, "state cannot be null.");
 
         return ResponseEntity.ok(damCatalogService.getDamCatalogByState(state));
     }
