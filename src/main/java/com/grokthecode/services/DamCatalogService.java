@@ -5,6 +5,8 @@ import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -14,12 +16,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Transactional
+@Log4j2
 public class DamCatalogService {
 
     public final DamCatalogRepository damCatalogRepository;
@@ -77,7 +81,7 @@ public class DamCatalogService {
         damCatalogRepository.save(originalDamCatalogEntity);
     }
 
-    public void syncDamsCatalog() throws URISyntaxException {
+    public Pair<List<DamCatalogEntity>,List<String>> syncDamsCatalog() throws URISyntaxException {
 
         final RestClient restClient = RestClient.create();
 
@@ -88,6 +92,9 @@ public class DamCatalogService {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
 
+        final List<DamCatalogEntity>damCatalogEntityList = new ArrayList<>();
+        final List<String> syncErrorMessageList = new ArrayList<>();
+
         for (final PresasDto presasDto : presasDtoList) {
             final DamCatalogEntity damCatalogEntity = new DamCatalogEntity(
                     presasDto.getClavesih(),
@@ -95,7 +102,7 @@ public class DamCatalogService {
                     presasDto.getNombrecomun(),
                     presasDto.getEstado(),
                     presasDto.getNommunicipio(),
-                   presasDto.getRegioncna(),
+                    presasDto.getRegioncna(),
                     presasDto.getLatitud(),
                     presasDto.getLongitud(),
                     presasDto.getUso(),
@@ -114,9 +121,16 @@ public class DamCatalogService {
                     updateDamCatalog(damCatalogEntity);
                 }
             } else {
-                createDamCatalog(damCatalogEntity);
+
+                try {
+                  damCatalogEntityList.add(createDamCatalog(damCatalogEntity));
+                } catch (IllegalArgumentException e) {
+                    log.info(e.getMessage());
+                    syncErrorMessageList.add(e.getMessage());
+                }
             }
         }
+        return Pair.of(damCatalogEntityList, syncErrorMessageList);
     }
 
     public Optional<DamCatalogEntity> getDamCatalogById(final Long damCatalogId) {

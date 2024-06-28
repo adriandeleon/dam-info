@@ -1,5 +1,6 @@
 package com.grokthecode.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grokthecode.common.GlobalConstants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -47,6 +48,7 @@ public class DailyMeasurementEntity extends AbstractEntity{
     private LocalDate measurementDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "damId", referencedColumnName = "id")
     private DamCatalogEntity damCatalogEntity;
 

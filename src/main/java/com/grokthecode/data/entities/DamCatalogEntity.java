@@ -1,5 +1,6 @@
 package com.grokthecode.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grokthecode.common.GlobalConstants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -112,5 +113,6 @@ public class DamCatalogEntity extends AbstractEntity {
     private String shadeHeight;
 
     @OneToMany(mappedBy = "damCatalogEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<DailyMeasurementEntity> dailyMeasurementEntityList;
 }
