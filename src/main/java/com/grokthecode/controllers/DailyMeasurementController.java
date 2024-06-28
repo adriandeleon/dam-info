@@ -42,10 +42,13 @@ public class DailyMeasurementController {
             startDate = LocalDate.parse(dailyMeasurementRequest.startDate());
         } catch (final DateTimeParseException ignored) {}
 
-        LocalDate endDate = null;
+        LocalDate endDate;
         try {
             endDate = LocalDate.parse(dailyMeasurementRequest.endDate());
-        } catch (final DateTimeParseException ignored) {}
+        } catch (final DateTimeParseException e) {
+            log.info(e.getMessage());
+            endDate = startDate;
+        }
 
         if(StringUtils.isNotBlank(sihKey) && startDate != null && endDate != null) {
             return ResponseEntity.ok(dailyMeasurementService.getDailyMeasurements(sihKey, startDate, endDate));

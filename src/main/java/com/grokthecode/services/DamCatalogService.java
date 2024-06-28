@@ -73,10 +73,10 @@ public class DamCatalogService {
         originalDamCatalogEntity.setUsage(updatedDamCatalogEntity.getUsage());
         originalDamCatalogEntity.setFreeBorder(updatedDamCatalogEntity.getFreeBorder());
         originalDamCatalogEntity.setElevationCrown(updatedDamCatalogEntity.getElevationCrown());
-        originalDamCatalogEntity.setNAMECapacity(updatedDamCatalogEntity.getNAMECapacity());
+        originalDamCatalogEntity.setNameCapacity(updatedDamCatalogEntity.getNameCapacity());
         originalDamCatalogEntity.setVerterType(updatedDamCatalogEntity.getVerterType());
         originalDamCatalogEntity.setOperationStartYear(updatedDamCatalogEntity.getOperationStartYear());
-        originalDamCatalogEntity.setNAMEElevation(updatedDamCatalogEntity.getNAMEElevation());
+        originalDamCatalogEntity.setNameElevation(updatedDamCatalogEntity.getNameElevation());
 
         damCatalogRepository.save(originalDamCatalogEntity);
     }

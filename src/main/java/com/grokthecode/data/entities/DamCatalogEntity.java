@@ -21,7 +21,7 @@ public class DamCatalogEntity extends AbstractEntity {
     public DamCatalogEntity(final String sihKey, final String officialName, final String commonName, final String state,
                             final String municipality, final String cnaRegion, final Double latitude, final Double longitude,
                             final String usage, final String currents, final String verterType, final String operationStartYear,
-                            final String elevationCrown, final Double freeBorder, final Double NAMEElevation, final Double NAMECapacity,
+                            final String elevationCrown, final Double freeBorder, final Double nameElevation, final Double nameCapacity,
                             final String shadeHeight) {
         this.sihKey = sihKey;
         this.officialName = officialName;
@@ -37,8 +37,8 @@ public class DamCatalogEntity extends AbstractEntity {
         this.operationStartYear = operationStartYear;
         this.elevationCrown = elevationCrown;
         this.freeBorder = freeBorder;
-        this.NAMEElevation = NAMEElevation;
-        this.NAMECapacity = NAMECapacity;
+        this.nameElevation = nameElevation;
+        this.nameCapacity = nameCapacity;
         this.shadeHeight = shadeHeight;
     }
 
@@ -103,11 +103,11 @@ public class DamCatalogEntity extends AbstractEntity {
 
     @NotNull(message = "NAMEElevation" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL)
     @Column(name = "NAMEElevation", nullable = false)
-    private Double NAMEElevation;
+    private Double nameElevation;
 
     @NotNull(message = "NAMECapacity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL)
     @Column(name = "NAMECapacity", nullable = false)
-    private Double NAMECapacity;
+    private Double nameCapacity;
 
     @Column(name = "shadeHeight")
     private String shadeHeight;

@@ -14,8 +14,6 @@ public interface DailyMeasurementRepository extends JpaRepository<DailyMeasureme
 
     List<DailyMeasurementEntity> findByDamCatalogEntityOrderByIdDesc(DamCatalogEntity damCatalogEntity);
     Boolean existsByDamCatalogEntityAndMeasurementDate(DamCatalogEntity damCatalogEntity, LocalDate measurementDate);
-
     List<DailyMeasurementEntity> findByMeasurementDateBetweenOrderByMeasurementDateAsc(LocalDate startDate, LocalDate endDate);
-
     List<DailyMeasurementEntity> findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateAsc(DamCatalogEntity damCatalogEntity, LocalDate startDate, LocalDate endDate);
 }
