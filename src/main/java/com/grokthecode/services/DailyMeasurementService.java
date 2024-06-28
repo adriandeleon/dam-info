@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,13 +134,13 @@ public class DailyMeasurementService {
         return Pair.of(List.copyOf(dailyMeasurementEntityList), List.copyOf(syncErrorMessageList));
     }
 
-    public List<Pair<List<DailyMeasurementEntity>, List<String>>> syncDamsDailyFill(final String startDate, final String endDate) throws URISyntaxException {
+    public List<Pair<List<DailyMeasurementEntity>, List<String>>> syncDamsDailyFill(final String startDate, final String endDate) throws URISyntaxException, DateTimeParseException {
         Objects.requireNonNull(startDate, "startDate cannot be null or empty.");
         Objects.requireNonNull(endDate, "endDate cannot be null or empty.");
 
         final List<Pair<List<DailyMeasurementEntity>, List<String>>> dailyMeasurementEntityList = new ArrayList<>();
 
-        final LocalDate parsedStartDate = LocalDate.parse(startDate);
+        final LocalDate parsedStartDate =LocalDate.parse(startDate);
         final LocalDate parsedEndDate = LocalDate.parse(endDate);
 
         final List<LocalDate> localDateList = generateDatesBetween(parsedStartDate, parsedEndDate);
