@@ -1,12 +1,14 @@
 package com.grokthecode.controllers;
 
 import com.grokthecode.data.entities.DailyMeasurementEntity;
+import com.grokthecode.data.requests.DailyMeasurementDatesRequest;
 import com.grokthecode.data.requests.DailyMeasurementRequest;
 import com.grokthecode.data.responses.DailyMeasurementSyncResponse;
 import com.grokthecode.services.DailyMeasurementService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.atmosphere.config.service.Post;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,5 +89,26 @@ public class DailyMeasurementController {
                 new DailyMeasurementSyncResponse(resultPair.getLeft().size(), resultPair.getLeft(), resultPair.getRight());
 
         return ResponseEntity.ok(dailyMeasurementSyncResponse);
+    }
+
+    @PostMapping("/api/dams/measurements/sync/dates")
+    public  ResponseEntity<List<DailyMeasurementSyncResponse>> syncDailyMeasurements(@RequestBody DailyMeasurementDatesRequest dailyMeasurementDatesRequest) throws URISyntaxException {
+        Objects.requireNonNull(dailyMeasurementDatesRequest, "y cannot be null.");
+
+        final String startDate = dailyMeasurementDatesRequest.startDate();
+        String endDate = dailyMeasurementDatesRequest.endDate();
+
+        if(StringUtils.isBlank(endDate) || endDate.equals("string")) {
+            endDate = startDate;
+        }
+
+        final List<Pair<List<DailyMeasurementEntity>, List<String>>> dailyMeasurementEntityList  = dailyMeasurementService.syncDamsDailyFill(startDate, endDate);
+        final List<DailyMeasurementSyncResponse> dailyMeasurementSyncResponseList = new ArrayList<>();
+
+        for (Pair<List<DailyMeasurementEntity>, List<String>> listListPair : dailyMeasurementEntityList) {
+            dailyMeasurementSyncResponseList.add(new DailyMeasurementSyncResponse(listListPair.getLeft().size(), listListPair.getLeft(), listListPair.getRight()));
+        }
+
+        return ResponseEntity.ok(dailyMeasurementSyncResponseList);
     }
 }

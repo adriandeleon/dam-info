@@ -18,10 +18,15 @@ import org.springframework.web.client.RestClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -66,14 +71,14 @@ public class DailyMeasurementService {
             throw new IllegalArgumentException(" dam with sihKey " + sihKey + " not found.");
         }
 
-        return List.copyOf(dailyMeasurementRepository.findByDamCatalogEntityOrderByIdDesc(optionalDamCatalogEntity.get()));
+        return List.copyOf(dailyMeasurementRepository.findByDamCatalogEntityOrderByMeasurementDateDesc(optionalDamCatalogEntity.get()));
     }
 
     public List<DailyMeasurementEntity> getDailyMeasurements(final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(startDate, "startDate cannot be null.");
         Objects.requireNonNull(endDate, "endDate cannot be null.");
 
-        return List.copyOf(dailyMeasurementRepository.findByMeasurementDateBetweenOrderByMeasurementDateAsc(startDate, endDate));
+        return List.copyOf(dailyMeasurementRepository.findByMeasurementDateBetweenOrderByMeasurementDateDesc(startDate, endDate));
     }
 
     public List<DailyMeasurementEntity> getDailyMeasurements(final String sihKey, final LocalDate startDate, final LocalDate endDate) {
@@ -87,7 +92,7 @@ public class DailyMeasurementService {
             throw new IllegalArgumentException(" dam with sihKey " + sihKey + " not found.");
         }
 
-        return List.copyOf(dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateAsc(optionalDamCatalogEntity.get(), startDate, endDate));
+        return List.copyOf(dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateDesc(optionalDamCatalogEntity.get(), startDate, endDate));
     }
 
     public Pair<List<DailyMeasurementEntity>, List<String>> syncDamsDailyFill(final String formatedDate) throws URISyntaxException {
@@ -125,7 +130,26 @@ public class DailyMeasurementService {
                 syncErrorMessageList.add(e.getMessage());
             }
         }
-        return Pair.of(dailyMeasurementEntityList, syncErrorMessageList);
+        return Pair.of(List.copyOf(dailyMeasurementEntityList), List.copyOf(syncErrorMessageList));
+    }
+
+    public List<Pair<List<DailyMeasurementEntity>, List<String>>> syncDamsDailyFill(final String startDate, final String endDate) throws URISyntaxException {
+        Objects.requireNonNull(startDate, "startDate cannot be null or empty.");
+        Objects.requireNonNull(endDate, "endDate cannot be null or empty.");
+
+        final List<Pair<List<DailyMeasurementEntity>, List<String>>> dailyMeasurementEntityList = new ArrayList<>();
+
+        final LocalDate parsedStartDate = LocalDate.parse(startDate);
+        final LocalDate parsedEndDate = LocalDate.parse(endDate);
+
+        final List<LocalDate> localDateList = generateDatesBetween(parsedStartDate, parsedEndDate);
+
+        for (final LocalDate localDate : localDateList) {
+            pause(10);
+            dailyMeasurementEntityList.add(syncDamsDailyFill(localDate.format(DateTimeFormatter.ISO_LOCAL_DATE)));
+        }
+
+        return dailyMeasurementEntityList;
     }
 
     public boolean dailyMesureExistsByDate(final Long damId, final LocalDate localDate) {
@@ -138,5 +162,22 @@ public class DailyMeasurementService {
             throw new IllegalArgumentException(" dam with damId " + damId + " not found");
         }
         return dailyMeasurementRepository.existsByDamCatalogEntityAndMeasurementDate(optionalDamCatalogEntity.get(), localDate);
+    }
+
+    private List<LocalDate> generateDatesBetween(final LocalDate startDate, final LocalDate endDate) {
+        long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
+        return IntStream.rangeClosed(0, (int) numOfDaysBetween)
+                .mapToObj(startDate::plusDays)
+                .collect(Collectors.toList());
+    }
+
+    private void pause(final int seconds) {
+        try {
+            TimeUnit.SECONDS.sleep(seconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Sleep interrupted: {}", e.getMessage());
+        }
     }
 }

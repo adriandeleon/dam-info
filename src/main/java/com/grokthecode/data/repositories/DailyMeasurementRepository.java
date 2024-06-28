@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface DailyMeasurementRepository extends JpaRepository<DailyMeasurementEntity, Long>, JpaSpecificationExecutor<DailyMeasurementEntity> {
 
-    List<DailyMeasurementEntity> findByDamCatalogEntityOrderByIdDesc(DamCatalogEntity damCatalogEntity);
+    List<DailyMeasurementEntity> findByDamCatalogEntityOrderByMeasurementDateDesc(DamCatalogEntity damCatalogEntity);
     Boolean existsByDamCatalogEntityAndMeasurementDate(DamCatalogEntity damCatalogEntity, LocalDate measurementDate);
-    List<DailyMeasurementEntity> findByMeasurementDateBetweenOrderByMeasurementDateAsc(LocalDate startDate, LocalDate endDate);
-    List<DailyMeasurementEntity> findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateAsc(DamCatalogEntity damCatalogEntity, LocalDate startDate, LocalDate endDate);
+    List<DailyMeasurementEntity> findByMeasurementDateBetweenOrderByMeasurementDateDesc(LocalDate startDate, LocalDate endDate);
+    List<DailyMeasurementEntity> findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateDesc(DamCatalogEntity damCatalogEntity, LocalDate startDate, LocalDate endDate);
 }

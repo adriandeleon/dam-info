@@ -33,7 +33,7 @@ public class DamInfoService {
         final List<DamInfoResponse> damInfoResponseList = new ArrayList<>();
 
         for (final DamCatalogEntity damCatalogEntity : damCatalogRepository.findAll()) {
-            final List<DailyMeasurementEntity> dailyMeasurementEntityList = dailyMeasurementRepository.findByDamCatalogEntityOrderByIdDesc(damCatalogEntity);
+            final List<DailyMeasurementEntity> dailyMeasurementEntityList = dailyMeasurementRepository.findByDamCatalogEntityOrderByMeasurementDateDesc(damCatalogEntity);
             final DamInfoResponse damInfoResponse = new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
 
             damInfoResponseList.add(damInfoResponse);
@@ -50,7 +50,7 @@ public class DamInfoService {
 
         for (final DamCatalogEntity damCatalogEntity : damCatalogRepository.findAll()) {
             final List<DailyMeasurementEntity> dailyMeasurementEntityList =
-                    dailyMeasurementRepository.findByMeasurementDateBetweenOrderByMeasurementDateAsc(startDate, endDate);
+                    dailyMeasurementRepository.findByMeasurementDateBetweenOrderByMeasurementDateDesc(startDate, endDate);
             final DamInfoResponse damInfoResponse = new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
 
             damInfoResponseList.add(damInfoResponse);
@@ -65,7 +65,7 @@ public class DamInfoService {
 
         for (final DamCatalogEntity damCatalogEntity : damCatalogRepository.findByState(state)) {
             final List<DailyMeasurementEntity> dailyMeasurementEntityList =
-                    dailyMeasurementRepository.findByDamCatalogEntityOrderByIdDesc(damCatalogEntity);
+                    dailyMeasurementRepository.findByDamCatalogEntityOrderByMeasurementDateDesc(damCatalogEntity);
             final DamInfoResponse damInfoResponse = new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
 
             damInfoResponseList.add(damInfoResponse);
@@ -82,7 +82,7 @@ public class DamInfoService {
 
         for (final DamCatalogEntity damCatalogEntity : damCatalogRepository.findByState(state)) {
             final List<DailyMeasurementEntity> dailyMeasurementEntityList =
-                    dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateAsc(damCatalogEntity, startDate, endDate);
+                    dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateDesc(damCatalogEntity, startDate, endDate);
             final DamInfoResponse damInfoResponse = new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
 
             damInfoResponseList.add(damInfoResponse);
@@ -100,7 +100,7 @@ public class DamInfoService {
         final DamCatalogEntity damCatalogEntity = damCatalogEntityOptional.get();
 
         final List<DailyMeasurementEntity> dailyMeasurementEntityList =
-                dailyMeasurementRepository.findByDamCatalogEntityOrderByIdDesc(damCatalogEntity);
+                dailyMeasurementRepository.findByDamCatalogEntityOrderByMeasurementDateDesc(damCatalogEntity);
 
         return new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
     }
@@ -119,7 +119,7 @@ public class DamInfoService {
         final DamCatalogEntity damCatalogEntity = damCatalogEntityOptional.get();
 
         final List<DailyMeasurementEntity> dailyMeasurementEntityList =
-                dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateAsc(damCatalogEntity, startDate, endDate);
+                dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateDesc(damCatalogEntity, startDate, endDate);
 
         return new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
     }
