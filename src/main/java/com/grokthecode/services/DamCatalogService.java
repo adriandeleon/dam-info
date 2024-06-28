@@ -21,20 +21,37 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * The type Dam catalog service.
+ */
 @Service
 @Transactional
 @Log4j2
 public class DamCatalogService {
 
+    /**
+     * The Dam catalog repository.
+     */
     public final DamCatalogRepository damCatalogRepository;
 
     @Value("${app.datasource.url}")
     private String appDatasourceUrl;
 
+    /**
+     * Instantiates a new Dam catalog service.
+     *
+     * @param damCatalogRepository the dam catalog repository
+     */
     public DamCatalogService(final DamCatalogRepository damCatalogRepository) {
         this.damCatalogRepository = damCatalogRepository;
     }
 
+    /**
+     * Create dam catalog dam catalog entity.
+     *
+     * @param damCatalogEntity the dam catalog entity
+     * @return the dam catalog entity
+     */
     public DamCatalogEntity createDamCatalog(final DamCatalogEntity damCatalogEntity) {
         Objects.requireNonNull(damCatalogEntity, "damCatalogEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
@@ -46,11 +63,21 @@ public class DamCatalogService {
         return damCatalogRepository.save(damCatalogEntity);
     }
 
+    /**
+     * List all dams list.
+     *
+     * @return the list
+     */
     public List<DamCatalogEntity> listAllDams() {
 
         return List.copyOf(damCatalogRepository.findAll());
     }
 
+    /**
+     * Update dam catalog.
+     *
+     * @param updatedDamCatalogEntity the updated dam catalog entity
+     */
     public void updateDamCatalog(final DamCatalogEntity updatedDamCatalogEntity) {
         Objects.requireNonNull(updatedDamCatalogEntity, "updatedDamCatalogEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
@@ -81,6 +108,12 @@ public class DamCatalogService {
         damCatalogRepository.save(originalDamCatalogEntity);
     }
 
+    /**
+     * Sync dams catalog pair.
+     *
+     * @return the pair
+     * @throws URISyntaxException the uri syntax exception
+     */
     public Pair<List<DamCatalogEntity>,List<String>> syncDamsCatalog() throws URISyntaxException {
 
         final RestClient restClient = RestClient.create();
@@ -133,24 +166,48 @@ public class DamCatalogService {
         return Pair.of(damCatalogEntityList, syncErrorMessageList);
     }
 
+    /**
+     * Gets dam catalog by id.
+     *
+     * @param damCatalogId the dam catalog id
+     * @return the dam catalog by id
+     */
     public Optional<DamCatalogEntity> getDamCatalogById(final Long damCatalogId) {
         Objects.requireNonNull(damCatalogId, "damCatalogId" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         return damCatalogRepository.findById(damCatalogId);
     }
 
+    /**
+     * Gets dam catalog by sih key.
+     *
+     * @param sihKey the sih key
+     * @return the dam catalog by sih key
+     */
     public Optional<DamCatalogEntity> getDamCatalogBySihKey(final String sihKey) {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         return damCatalogRepository.findBySihKey(sihKey);
     }
 
+    /**
+     * Gets dam catalog by state.
+     *
+     * @param state the state
+     * @return the dam catalog by state
+     */
     public List<DamCatalogEntity> getDamCatalogByState(final String state) {
         Objects.requireNonNull(state, "state" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         return List.copyOf(damCatalogRepository.findByState(state));
     }
 
+    /**
+     * Dam exists by sih key boolean.
+     *
+     * @param sihKey the sih key
+     * @return the boolean
+     */
     public boolean damExistsBySihKey(final String sihKey) {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 

@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * The type Dam info service.
+ */
 @Service
 @Transactional
 @Log4j2
@@ -23,12 +26,23 @@ public class DamInfoService {
     final private DamCatalogRepository damCatalogRepository;
     final private DailyMeasurementRepository dailyMeasurementRepository;
 
+    /**
+     * Instantiates a new Dam info service.
+     *
+     * @param damCatalogRepository       the dam catalog repository
+     * @param dailyMeasurementRepository the daily measurement repository
+     */
     public DamInfoService(final DamCatalogRepository damCatalogRepository,
                           final DailyMeasurementRepository dailyMeasurementRepository) {
         this.damCatalogRepository = damCatalogRepository;
         this.dailyMeasurementRepository = dailyMeasurementRepository;
     }
 
+    /**
+     * Gets dams info.
+     *
+     * @return the dams info
+     */
     public List<DamInfoResponse> getDamsInfo() {
         final List<DamInfoResponse> damInfoResponseList = new ArrayList<>();
 
@@ -42,6 +56,13 @@ public class DamInfoService {
         return  damInfoResponseList;
     }
 
+    /**
+     * Gets dams info by dates.
+     *
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @return the dams info by dates
+     */
     public List<DamInfoResponse> getDamsInfoByDates(final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(startDate, "startDate cannot be null.");
         Objects.requireNonNull(endDate, "endDate cannot be null.");
@@ -58,6 +79,12 @@ public class DamInfoService {
         return damInfoResponseList;
     }
 
+    /**
+     * Gets dams info by state.
+     *
+     * @param state the state
+     * @return the dams info by state
+     */
     public List<DamInfoResponse> getDamsInfoByState(final String state) {
         Objects.requireNonNull(state, "state cannot be null.");
 
@@ -73,6 +100,14 @@ public class DamInfoService {
         return damInfoResponseList;
     }
 
+    /**
+     * Gets dams info by state.
+     *
+     * @param state     the state
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @return the dams info by state
+     */
     public List<DamInfoResponse> getDamsInfoByState(final String state, final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(state, "state cannot be null.");
         Objects.requireNonNull(startDate, "startDate cannot be null.");
@@ -90,6 +125,12 @@ public class DamInfoService {
         return damInfoResponseList;
     }
 
+    /**
+     * Gets dams info by sih key.
+     *
+     * @param sihKey the sih key
+     * @return the dams info by sih key
+     */
     public DamInfoResponse getDamsInfoBySihKey(final String sihKey) {
         final Optional<DamCatalogEntity> damCatalogEntityOptional = damCatalogRepository.findBySihKey(sihKey);
 
@@ -105,6 +146,14 @@ public class DamInfoService {
         return new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
     }
 
+    /**
+     * Gets dams info by sih key.
+     *
+     * @param sihKey    the sih key
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @return the dams info by sih key
+     */
     public DamInfoResponse getDamsInfoBySihKey(final String sihKey, final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(sihKey, "sihKey cannot be null.");
         Objects.requireNonNull(startDate, "startDate cannot be null.");

@@ -29,17 +29,29 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * The type Daily measurement service.
+ */
 @Service
 @Transactional
 public class DailyMeasurementService {
 
     private static final Logger log = LoggerFactory.getLogger(DailyMeasurementService.class);
     private final DailyMeasurementRepository dailyMeasurementRepository;
+    /**
+     * The Dam catalog repository.
+     */
     public final DamCatalogRepository damCatalogRepository;
 
     @Value("${app.datasource.url}")
     private String appDatasourceUrl;
 
+    /**
+     * Create dam daily fill daily measurement entity.
+     *
+     * @param dailyMeasurementEntity the daily measurement entity
+     * @return the daily measurement entity
+     */
     public DailyMeasurementEntity createDamDailyFill(final DailyMeasurementEntity dailyMeasurementEntity) {
         Objects.requireNonNull(dailyMeasurementEntity, "dailyMeasurementEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
@@ -52,17 +64,34 @@ public class DailyMeasurementService {
         return dailyMeasurementRepository.save(dailyMeasurementEntity);
     }
 
+    /**
+     * Instantiates a new Daily measurement service.
+     *
+     * @param dailyMeasurementRepository the daily measurement repository
+     * @param damCatalogRepository       the dam catalog repository
+     */
     public DailyMeasurementService(final DailyMeasurementRepository dailyMeasurementRepository,
                                    final DamCatalogRepository damCatalogRepository) {
         this.dailyMeasurementRepository = dailyMeasurementRepository;
         this.damCatalogRepository = damCatalogRepository;
     }
 
+    /**
+     * Gets daily measurements.
+     *
+     * @return the daily measurements
+     */
     public List<DailyMeasurementEntity> getDailyMeasurements() {
 
         return List.copyOf(dailyMeasurementRepository.findAll());
     }
 
+    /**
+     * Gets daily measurements.
+     *
+     * @param sihKey the sih key
+     * @return the daily measurements
+     */
     public List<DailyMeasurementEntity> getDailyMeasurements(String sihKey) {
         Objects.requireNonNull(sihKey, "sihKey cannot be null.");
 
@@ -75,6 +104,13 @@ public class DailyMeasurementService {
         return List.copyOf(dailyMeasurementRepository.findByDamCatalogEntityOrderByMeasurementDateDesc(optionalDamCatalogEntity.get()));
     }
 
+    /**
+     * Gets daily measurements.
+     *
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @return the daily measurements
+     */
     public List<DailyMeasurementEntity> getDailyMeasurements(final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(startDate, "startDate cannot be null.");
         Objects.requireNonNull(endDate, "endDate cannot be null.");
@@ -82,6 +118,14 @@ public class DailyMeasurementService {
         return List.copyOf(dailyMeasurementRepository.findByMeasurementDateBetweenOrderByMeasurementDateDesc(startDate, endDate));
     }
 
+    /**
+     * Gets daily measurements.
+     *
+     * @param sihKey    the sih key
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @return the daily measurements
+     */
     public List<DailyMeasurementEntity> getDailyMeasurements(final String sihKey, final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(sihKey, "sihKey cannot be null.");
         Objects.requireNonNull(startDate, "startDate cannot be null.");
@@ -96,6 +140,13 @@ public class DailyMeasurementService {
         return List.copyOf(dailyMeasurementRepository.findByDamCatalogEntityAndMeasurementDateBetweenOrderByMeasurementDateDesc(optionalDamCatalogEntity.get(), startDate, endDate));
     }
 
+    /**
+     * Sync dams daily fill pair.
+     *
+     * @param formatedDate the formated date
+     * @return the pair
+     * @throws URISyntaxException the uri syntax exception
+     */
     public Pair<List<DailyMeasurementEntity>, List<String>> syncDamsDailyFill(final String formatedDate) throws URISyntaxException {
         Objects.requireNonNull(formatedDate, "formatedDate cannot be null or empty.");
 
@@ -134,6 +185,15 @@ public class DailyMeasurementService {
         return Pair.of(List.copyOf(dailyMeasurementEntityList), List.copyOf(syncErrorMessageList));
     }
 
+    /**
+     * Sync dams daily fill list.
+     *
+     * @param startDate the start date
+     * @param endDate   the end date
+     * @return the list
+     * @throws URISyntaxException     the uri syntax exception
+     * @throws DateTimeParseException the date time parse exception
+     */
     public List<Pair<List<DailyMeasurementEntity>, List<String>>> syncDamsDailyFill(final String startDate, final String endDate) throws URISyntaxException, DateTimeParseException {
         Objects.requireNonNull(startDate, "startDate cannot be null or empty.");
         Objects.requireNonNull(endDate, "endDate cannot be null or empty.");
@@ -153,6 +213,13 @@ public class DailyMeasurementService {
         return dailyMeasurementEntityList;
     }
 
+    /**
+     * Daily mesure exists by date boolean.
+     *
+     * @param damId     the dam id
+     * @param localDate the local date
+     * @return the boolean
+     */
     public boolean dailyMesureExistsByDate(final Long damId, final LocalDate localDate) {
         Objects.requireNonNull(damId, "damId cannot be null.");
         Objects.requireNonNull(localDate, "localDate cannot be null.");
