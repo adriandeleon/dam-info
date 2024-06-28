@@ -62,7 +62,7 @@ public class DailyMeasurementController {
         return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/api/dams/measurements/sync")
+    @GetMapping("/api/dams/measurements/sync/date/today")
     public ResponseEntity<DailyMeasurementSyncResponse> syncDailyMeasurements() throws URISyntaxException {
         final Pair<List<DailyMeasurementEntity>, List<String>> resultPair = dailyMeasurementService.syncDamsDailyFill(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         final DailyMeasurementSyncResponse dailyMeasurementSyncResponse =
