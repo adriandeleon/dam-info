@@ -49,6 +49,7 @@ public class DamCatalogRestController {
 
         final DamCatalogSyncResponse damCatalogSyncResponse =
                 new DamCatalogSyncResponse(pairResponse.getLeft().size(), pairResponse.getLeft(), pairResponse.getRight());
+
         return ResponseEntity.ok(damCatalogSyncResponse);
     }
 }

@@ -28,10 +28,6 @@ public class DailyMeasurementEntity extends AbstractEntity{
         this.damCatalogEntity = damCatalogEntity;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @NotNull(message = "currentElevation" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL)
     @Column(name = "currentElevation", nullable = false)
     private Double currentElevation;

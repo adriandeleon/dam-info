@@ -42,10 +42,6 @@ public class DamCatalogEntity extends AbstractEntity {
         this.shadeHeight = shadeHeight;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @NotNull(message = "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL)
     @NotBlank(message = "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_BLANK)
     @Column(name = "sihKey", nullable = false)

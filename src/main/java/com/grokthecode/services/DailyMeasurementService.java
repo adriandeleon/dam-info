@@ -7,6 +7,7 @@ import com.grokthecode.data.repositories.DailyMeasurementRepository;
 import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,9 @@ import java.util.stream.IntStream;
  */
 @Service
 @Transactional
+@Log4j2
 public class DailyMeasurementService {
 
-    private static final Logger log = LoggerFactory.getLogger(DailyMeasurementService.class);
     private final DailyMeasurementRepository dailyMeasurementRepository;
     /**
      * The Dam catalog repository.

@@ -8,7 +8,6 @@ import com.grokthecode.services.DailyMeasurementService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.atmosphere.config.service.Post;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,11 +42,13 @@ public class DailyMeasurementController {
         final String sihKey = dailyMeasurementRequest.sihKey();
 
         LocalDate startDate = null;
+
         try {
             startDate = LocalDate.parse(dailyMeasurementRequest.startDate());
         } catch (final DateTimeParseException ignored) {}
 
         LocalDate endDate;
+
         try {
             endDate = LocalDate.parse(dailyMeasurementRequest.endDate());
         } catch (final DateTimeParseException e) {

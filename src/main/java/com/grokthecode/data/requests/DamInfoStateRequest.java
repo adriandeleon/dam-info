@@ -1,4 +1,6 @@
 package com.grokthecode.data.requests;
 
-public record DamInfoStateRequest(String state, String startDate, String endDate) {
+import java.io.Serializable;
+
+public record DamInfoStateRequest(String state, String startDate, String endDate) implements Serializable {
 }

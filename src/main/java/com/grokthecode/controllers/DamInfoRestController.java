@@ -22,12 +22,13 @@ import java.util.Objects;
 public class DamInfoRestController {
     final private DamInfoService damInfoService;
 
-    public DamInfoRestController(DamInfoService damInfoService) {
+    public DamInfoRestController(final DamInfoService damInfoService) {
         this.damInfoService = damInfoService;
     }
 
     @GetMapping("/api/dams/info")
     public ResponseEntity<List<DamInfoResponse>> getAllDamsInfo() {
+
         return ResponseEntity.ok(damInfoService.getDamsInfo());
     }
 
