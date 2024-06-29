@@ -16,7 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The type Dam info service.
+ * The DamInfoService class provides methods to retrieve information about dams
+ * from the dam catalog and associated daily measurements.
  */
 @Service
 @Transactional
@@ -26,12 +27,6 @@ public class DamInfoService {
     final private DamCatalogRepository damCatalogRepository;
     final private DailyMeasurementRepository dailyMeasurementRepository;
 
-    /**
-     * Instantiates a new Dam info service.
-     *
-     * @param damCatalogRepository       the dam catalog repository
-     * @param dailyMeasurementRepository the daily measurement repository
-     */
     public DamInfoService(final DamCatalogRepository damCatalogRepository,
                           final DailyMeasurementRepository dailyMeasurementRepository) {
         this.damCatalogRepository = damCatalogRepository;
@@ -39,9 +34,10 @@ public class DamInfoService {
     }
 
     /**
-     * Gets dams info.
+     * Retrieves information about all dams from the dam catalog.
      *
-     * @return the dams info
+     * @return The list of DamInfoResponse objects containing the dam catalog information and
+     *         associated daily measurements, sorted by measurement date in descending order.
      */
     public List<DamInfoResponse> getDamsInfo() {
         final List<DamInfoResponse> damInfoResponseList = new ArrayList<>();
@@ -51,17 +47,17 @@ public class DamInfoService {
             final DamInfoResponse damInfoResponse = new DamInfoResponse(damCatalogEntity, dailyMeasurementEntityList);
 
             damInfoResponseList.add(damInfoResponse);
-            }
+        }
 
-        return  damInfoResponseList;
+        return damInfoResponseList;
     }
 
     /**
-     * Gets dams info by dates.
+     * Retrieves information about dams between the given start and end dates.
      *
-     * @param startDate the start date
-     * @param endDate   the end date
-     * @return the dams info by dates
+     * @param startDate the start date to filter the dams (not null)
+     * @param endDate the end date to filter the dams (not null)
+     * @return a list of DamInfoResponse objects containing information about the dams
      */
     public List<DamInfoResponse> getDamsInfoByDates(final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(startDate, "startDate cannot be null.");
@@ -80,10 +76,12 @@ public class DamInfoService {
     }
 
     /**
-     * Gets dams info by state.
+     * Retrieves a list of dam information for a given state.
      *
-     * @param state the state
-     * @return the dams info by state
+     * @param state the state for which dam information needs to be retrieved
+     * @return a list of DamInfoResponse objects containing the dam catalog entity and daily measurement entity
+     *         information for each dam in the given state
+     * @throws NullPointerException if the state is null
      */
     public List<DamInfoResponse> getDamsInfoByState(final String state) {
         Objects.requireNonNull(state, "state cannot be null.");
@@ -101,12 +99,13 @@ public class DamInfoService {
     }
 
     /**
-     * Gets dams info by state.
+     * Retrieves the information about dams in a specific state within a given date range.
      *
-     * @param state     the state
-     * @param startDate the start date
-     * @param endDate   the end date
-     * @return the dams info by state
+     * @param state     the state for which to retrieve the dam information (must not be null)
+     * @param startDate the start date of the date range for which to retrieve dam information (must not be null)
+     * @param endDate   the end date of the date range for which to retrieve dam information (must not be null)
+     * @return a list of DamInfoResponse objects containing the information about dams in the given state within the date range
+     * @throws NullPointerException if any of the parameters state, startDate, or endDate is null
      */
     public List<DamInfoResponse> getDamsInfoByState(final String state, final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(state, "state cannot be null.");
@@ -126,15 +125,18 @@ public class DamInfoService {
     }
 
     /**
-     * Gets dams info by sih key.
+     * Retrieves the information about a dam based on the specified SihKey.
      *
-     * @param sihKey the sih key
-     * @return the dams info by sih key
+     * @param sihKey the SihKey to search for
+     * @return a DamInfoResponse object containing the dam catalog entity and the list of daily measurement entities
+     * @throws IllegalArgumentException if no DamCatalogEntity with the specified sihKey is found
      */
     public DamInfoResponse getDamsInfoBySihKey(final String sihKey) {
+        Objects.requireNonNull(sihKey, "sihKey cannot be null.");
+
         final Optional<DamCatalogEntity> damCatalogEntityOptional = damCatalogRepository.findBySihKey(sihKey);
 
-        if(damCatalogEntityOptional.isEmpty()) {
+        if (damCatalogEntityOptional.isEmpty()) {
             throw new IllegalArgumentException("DamCatalogEntity with sihKey: " + sihKey + " not found");
         }
 
@@ -147,12 +149,17 @@ public class DamInfoService {
     }
 
     /**
-     * Gets dams info by sih key.
+     * Retrieves the dam information based on the SIH key, start date, and end date.
      *
-     * @param sihKey    the sih key
-     * @param startDate the start date
-     * @param endDate   the end date
-     * @return the dams info by sih key
+     * @param sihKey The SIH key used to identify the dam.
+     * @param startDate The start date for fetching dam measurements.
+     * @param endDate The end date for fetching dam measurements.
+     * @return The dam information response containing the dam catalog entity and
+     *         the list of daily measurement entities.
+     * @throws IllegalArgumentException if the dam catalog entity with the given
+     *         SIH key is not found.
+     * @throws NullPointerException if any of the parameters (sihKey, startDate,
+     *         endDate) is null.
      */
     public DamInfoResponse getDamsInfoBySihKey(final String sihKey, final LocalDate startDate, final LocalDate endDate) {
         Objects.requireNonNull(sihKey, "sihKey cannot be null.");
@@ -161,7 +168,7 @@ public class DamInfoService {
 
         final Optional<DamCatalogEntity> damCatalogEntityOptional = damCatalogRepository.findBySihKey(sihKey);
 
-        if(damCatalogEntityOptional.isEmpty()) {
+        if (damCatalogEntityOptional.isEmpty()) {
             throw new IllegalArgumentException("DamCatalogEntity with sihKey: " + sihKey + " not found");
         }
 
