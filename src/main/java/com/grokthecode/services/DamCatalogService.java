@@ -22,35 +22,29 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The type Dam catalog service.
+ * This class represents a service for managing a catalog of dams.
  */
 @Service
 @Transactional
 @Log4j2
 public class DamCatalogService {
 
-    /**
-     * The Dam catalog repository.
-     */
     public final DamCatalogRepository damCatalogRepository;
 
     @Value("${app.datasource.url}")
     private String appDatasourceUrl;
 
-    /**
-     * Instantiates a new Dam catalog service.
-     *
-     * @param damCatalogRepository the dam catalog repository
-     */
     public DamCatalogService(final DamCatalogRepository damCatalogRepository) {
         this.damCatalogRepository = damCatalogRepository;
     }
 
     /**
-     * Create dam catalog dam catalog entity.
+     * Creates a new Dam Catalog entity.
      *
-     * @param damCatalogEntity the dam catalog entity
-     * @return the dam catalog entity
+     * @param damCatalogEntity The DamCatalogEntity object representing the dam catalog to be created.
+     *                         Must not be null.
+     * @throws IllegalArgumentException if a dam with the same sihKey already exists.
+     * @return The created DamCatalogEntity object.
      */
     public DamCatalogEntity createDamCatalog(final DamCatalogEntity damCatalogEntity) {
         Objects.requireNonNull(damCatalogEntity, "damCatalogEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
@@ -64,9 +58,9 @@ public class DamCatalogService {
     }
 
     /**
-     * List all dams list.
+     * Retrieves a list of all dams from the dam catalog.
      *
-     * @return the list
+     * @return a list of DamCatalogEntity objects representing all the dams in the catalog.
      */
     public List<DamCatalogEntity> listAllDams() {
 
@@ -74,9 +68,11 @@ public class DamCatalogService {
     }
 
     /**
-     * Update dam catalog.
+     * Updates an existing Dam Catalog entity in the database with the provided updatedDamCatalogEntity object.
      *
-     * @param updatedDamCatalogEntity the updated dam catalog entity
+     * @param updatedDamCatalogEntity The updated Dam Catalog entity to be saved.
+     *                               Must not be null.
+     * @throws IllegalArgumentException If the Dam Catalog entity with the provided id does not exist in the database.
      */
     public void updateDamCatalog(final DamCatalogEntity updatedDamCatalogEntity) {
         Objects.requireNonNull(updatedDamCatalogEntity, "updatedDamCatalogEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
@@ -109,10 +105,11 @@ public class DamCatalogService {
     }
 
     /**
-     * Sync dams catalog pair.
+     * Synchronizes the DAMS catalog by fetching the latest data from the appDatasourceUrl
+     * and updating the local DAMS catalog accordingly.
      *
-     * @return the pair
-     * @throws URISyntaxException the uri syntax exception
+     * @return A pair of Lists containing the updated DAMS catalog entities and any synchronization error messages.
+     * @throws URISyntaxException if the appDatasourceUrl is invalid.
      */
     public Pair<List<DamCatalogEntity>,List<String>> syncDamsCatalog() throws URISyntaxException {
 
@@ -167,10 +164,10 @@ public class DamCatalogService {
     }
 
     /**
-     * Gets dam catalog by id.
+     * Retrieves the DAM catalog entity by its ID.
      *
-     * @param damCatalogId the dam catalog id
-     * @return the dam catalog by id
+     * @param damCatalogId the ID of the DAM catalog entity to retrieve
+     * @return an {@link Optional} containing the DAM catalog entity, or an empty optional if it does not exist
      */
     public Optional<DamCatalogEntity> getDamCatalogById(final Long damCatalogId) {
         Objects.requireNonNull(damCatalogId, "damCatalogId" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
@@ -179,10 +176,10 @@ public class DamCatalogService {
     }
 
     /**
-     * Gets dam catalog by sih key.
+     * Retrieves a DamCatalogEntity by its sihKey.
      *
-     * @param sihKey the sih key
-     * @return the dam catalog by sih key
+     * @param sihKey the sihKey of the DamCatalogEntity to retrieve
+     * @return an Optional containing the DamCatalogEntity, or an empty Optional if not found
      */
     public Optional<DamCatalogEntity> getDamCatalogBySihKey(final String sihKey) {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
@@ -191,10 +188,11 @@ public class DamCatalogService {
     }
 
     /**
-     * Gets dam catalog by state.
+     * Retrieves the List of DamCatalogEntity objects based on the given state.
      *
-     * @param state the state
-     * @return the dam catalog by state
+     * @param state The state for which to retrieve the dam catalog. Must not be null.
+     * @return The List of DamCatalogEntity objects that belong to the specified state.
+     * @throws NullPointerException If the state parameter is null.
      */
     public List<DamCatalogEntity> getDamCatalogByState(final String state) {
         Objects.requireNonNull(state, "state" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
@@ -203,10 +201,10 @@ public class DamCatalogService {
     }
 
     /**
-     * Dam exists by sih key boolean.
+     * Checks if a DAM (Digital Asset Management) entry exists for the given SIH (System Identification Header) key.
      *
-     * @param sihKey the sih key
-     * @return the boolean
+     * @param sihKey the SIH key to check for DAM existence
+     * @return true if DAM entry exists for the given SIH key, false otherwise
      */
     public boolean damExistsBySihKey(final String sihKey) {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
