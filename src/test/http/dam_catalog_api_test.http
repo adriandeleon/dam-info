@@ -4,15 +4,18 @@ Accept: application/json
 
 > {%
     client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
         client.assert(response.status === 200, "Response status is not 200");
     });
 
     client.test("Response content-type is json.", function () {
         const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
         client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
     });
 
     client.test("Response body should not be empty.", function () {
+        console.log("response.body is: ", response.body);
          client.assert(response.body.length > 0, "Response body should not be empty");
     });
 
@@ -22,4 +25,61 @@ Accept: application/json
     });
 %}
 
-###
+### Get the dam catalog by state.
+GET http://localhost:8080/api/dams/catalog/state/{{state}}
+Accept: application/json
+
+> {%
+    const state = request.environment.get("state");
+
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.test("Response body should not be empty.", function () {
+        console.log("response.body is: ", response.body);
+        client.assert(response.body.length > 0, "Response body should not be empty");
+    });
+
+    client.test("Check number of objects in response.", function () {
+        console.log("There are " + response.body.length + " dams in the dams catalog for " + state);
+        client.assert(response.body.length === 4, "Response body count should be 4 for " + state);
+    });
+%}
+
+### Get the dam catalog by sihKey.
+GET http://localhost:8080/api/dams/catalog/sihKey/{{sihKey}}
+Accept: application/json
+
+> {%
+    const sihKey = request.environment.get("sihKey");
+
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.test("Response body should not be empty.", function () {
+        console.log("response.body is: ", response.body);
+        client.assert(response.body !== undefined,"Response body should not be undefined.");
+    });
+
+    client.test("SihKey should be the same.", function () {
+        console.log("sihKey value is: " + response.body.sihKey);
+        console.log("expected response is: " + sihKey);
+        client.assert(response.body.sihKey === sihKey, "sihKey should be the same.");
+    });
+%}
