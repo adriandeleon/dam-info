@@ -1,0 +1,25 @@
+### Get the dams catalog.
+GET {{url}}/dams/catalog
+Accept: application/json
+
+> {%
+    client.test("Request executed successfully.", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json.", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.test("Response body should not be empty.", function () {
+         client.assert(response.body.length > 0, "Response body should not be empty");
+    });
+
+    client.test("Check number of objects in response.", function () {
+        console.log("There are " + response.body.length + " dams in the dams catalog.");
+        client.assert(response.body.length === 210, "Response body count should be 210");
+    });
+%}
+
+###
