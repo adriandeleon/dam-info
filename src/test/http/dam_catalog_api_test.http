@@ -26,7 +26,7 @@ Accept: application/json
 %}
 
 ### Get the dam catalog by state.
-GET http://localhost:8080/api/dams/catalog/state/{{state}}
+GET {{url}}/dams/catalog/state/{{state}}
 Accept: application/json
 
 > {%
@@ -55,7 +55,7 @@ Accept: application/json
 %}
 
 ### Get the dam catalog by sihKey.
-GET http://localhost:8080/api/dams/catalog/sihKey/{{sihKey}}
+GET {{url}}/dams/catalog/sihKey/{{sihKey}}
 Accept: application/json
 
 > {%
