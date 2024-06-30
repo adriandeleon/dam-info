@@ -1,0 +1,35 @@
+### Get the Dams info
+GET {{url}}/dams/info
+Accept: application/json
+
+> {%
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.test("Response body should not be empty.", function () {
+        console.log("response.body is: ", response.body);
+        client.assert(response.body.length > 0, "Response body should not be empty");
+    });
+
+    client.test("Check number of objects in response.", function () {
+        console.log("There are " + response.body.length + " dams in the dams catalog.");
+        client.assert(response.body.length === 210, "Response body count should be 210");
+    });
+
+    client.test("Response body should include dailyMeasurements.", function () {
+        console.log("response.body[0].dailyMeasurementList is:", response.body[0].dailyMeasurementList)
+        console.log("There are " + response.body[0].dailyMeasurementList.length + " daily measurements in the dams catalog.");
+        client.assert(response.body[0].dailyMeasurementList.length > 0, "Should have at least one daily measurement.");
+    });
+%}
+
+###
+
