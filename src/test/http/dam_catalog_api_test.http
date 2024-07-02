@@ -54,6 +54,56 @@ Accept: application/json
     });
 %}
 
+### Get the dam catalog by state (invalid state).
+GET {{url}}/dams/catalog/state/invalid_state
+Accept: application/json
+
+> {%
+    const state = request.environment.get("state");
+
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 404, "Response status is not 404");
+    });
+
+    client.test("Response content-type is application/problem+json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/problem+json", `Expected 'application/problem+json' but received '${type}'`);
+    });
+
+    client.test("Response body status should be 404.", function () {
+        console.log("response.body is: ", response.body);
+        console.log("response.body.status is: ", response.body.status);
+        client.assert(response.body.status === 404, "JSON status should be 404");
+    });
+%}
+
+### Get the dam catalog by state (empty state).
+GET {{url}}/dams/catalog/state/
+Accept: application/json
+
+> {%
+    const state = request.environment.get("state");
+
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 404, "Response status is not 404");
+    });
+
+    client.test("Response content-type is application/problem+json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/problem+json", `Expected 'application/problem+json' but received '${type}'`);
+    });
+
+    client.test("Response body status should be 404.", function () {
+        console.log("response.body is: ", response.body);
+        console.log("response.body.status is: ", response.body.status);
+        client.assert(response.body.status === 404, "JSON status should be 404");
+    });
+%}
+
 ### Get the dam catalog by sihKey.
 GET {{url}}/dams/catalog/sihKey/{{sihKey}}
 Accept: application/json
@@ -81,5 +131,55 @@ Accept: application/json
         console.log("sihKey value is: " + response.body.sihKey);
         console.log("expected response is: " + sihKey);
         client.assert(response.body.sihKey === sihKey, "sihKey should be the same.");
+    });
+%}
+
+### Get the dam catalog by sihKey (invalid sihKey).
+GET {{url}}/dams/catalog/sihKey/invalid_sihKey
+Accept: application/json
+
+> {%
+    const sihKey = request.environment.get("sihKey");
+
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 404, "Response status is not 404");
+    });
+
+    client.test("Response content-type is application/problem+json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/problem+json", `Expected 'application/problem+json' but received '${type}'`);
+    });
+
+    client.test("Response body status should be 404.", function () {
+        console.log("response.body is: ", response.body);
+        console.log("response.body.status is: ", response.body.status);
+        client.assert(response.body.status === 404, "JSON status should be 404");
+    });
+%}
+
+### Get the dam catalog by sihKey (invalid sihKey).
+GET {{url}}/dams/catalog/sihKey/
+Accept: application/json
+
+> {%
+    const sihKey = request.environment.get("sihKey");
+
+    client.test("Request executed successfully.", function () {
+        console.log("response.status is: " + response.status);
+        client.assert(response.status === 404, "Response status is not 404");
+    });
+
+    client.test("Response content-type is application/problem+json.", function () {
+        const type = response.contentType.mimeType;
+        console.log("response.contentType.mimeType is: " + response.contentType.mimeType);
+        client.assert(type === "application/problem+json", `Expected 'application/problem+json' but received '${type}'`);
+    });
+
+    client.test("Response body status should be 404.", function () {
+        console.log("response.body is: ", response.body);
+        console.log("response.body.status is: ", response.body.status);
+        client.assert(response.body.status === 404, "JSON status should be 404");
     });
 %}
