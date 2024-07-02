@@ -1,6 +1,9 @@
 package com.grokthecode.services;
 
 import com.grokthecode.common.GlobalConstants;
+import com.grokthecode.services.exceptions.DamWithSihKeyAlreadyExistsException;
+import com.grokthecode.services.exceptions.ResourceNotFoundException;
+import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
@@ -13,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -43,15 +45,16 @@ public class DamCatalogService {
      *
      * @param damCatalogEntity The DamCatalogEntity object representing the dam catalog to be created.
      *                         Must not be null.
-     * @throws IllegalArgumentException if a dam with the same sihKey already exists.
      * @return The created DamCatalogEntity object.
+     * @throws IllegalArgumentException if a dam with the same sihKey already exists.
      */
-    public DamCatalogEntity createDamCatalog(final DamCatalogEntity damCatalogEntity) {
+    public DamCatalogEntity createDamCatalog(final DamCatalogEntity damCatalogEntity) throws DamWithSihKeyAlreadyExistsException {
         Objects.requireNonNull(damCatalogEntity, "damCatalogEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
+        final String sihKey = damCatalogEntity.getSihKey();
         //Check that the Dam does not exist.
-        if (damExistsBySihKey(damCatalogEntity.getSihKey())) {
-            throw new IllegalArgumentException("Dam with the same sihKey already exists");
+        if (damExistsBySihKey(sihKey)) {
+            throw new DamWithSihKeyAlreadyExistsException(sihKey);
         }
 
         return damCatalogRepository.save(damCatalogEntity);
@@ -71,7 +74,7 @@ public class DamCatalogService {
      * Updates an existing Dam Catalog entity in the database with the provided updatedDamCatalogEntity object.
      *
      * @param updatedDamCatalogEntity The updated Dam Catalog entity to be saved.
-     *                               Must not be null.
+     *                                Must not be null.
      * @throws IllegalArgumentException If the Dam Catalog entity with the provided id does not exist in the database.
      */
     public void updateDamCatalog(final DamCatalogEntity updatedDamCatalogEntity) {
@@ -79,7 +82,7 @@ public class DamCatalogService {
 
         final Optional<DamCatalogEntity> optionalDamCatalogEntity = getDamCatalogById(updatedDamCatalogEntity.getId());
 
-        if(optionalDamCatalogEntity.isEmpty()) {
+        if (optionalDamCatalogEntity.isEmpty()) {
             throw new IllegalArgumentException("Dam Catalog with id " + updatedDamCatalogEntity.getId() + " does not exist.");
         }
 
@@ -109,58 +112,66 @@ public class DamCatalogService {
      * and updating the local DAMS catalog accordingly.
      *
      * @return A pair of Lists containing the updated DAMS catalog entities and any synchronization error messages.
-     * @throws URISyntaxException if the appDatasourceUrl is invalid.
      */
-    public Pair<List<DamCatalogEntity>,List<String>> syncDamsCatalog() throws URISyntaxException {
+    public Pair<List<DamCatalogEntity>, List<String>> syncDamsCatalog() throws SyncDamCatalogException {
 
-        final RestClient restClient = RestClient.create();
+        try {
+            final RestClient restClient = RestClient.create();
 
-        final String currentFormatedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        final String endpoint = appDatasourceUrl + currentFormatedDate;
+            // Get the current localDate in the apropiate format.
+            final String currentFormatedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            final String endpoint = appDatasourceUrl + currentFormatedDate;
 
-        final List<PresasDto> presasDtoList = restClient.get().uri(new URI(endpoint))
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+            final List<PresasDto> presasDtoList = restClient.get().uri(new URI(endpoint))
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {
+                    });
 
-        final List<DamCatalogEntity>damCatalogEntityList = new ArrayList<>();
-        final List<String> syncErrorMessageList = new ArrayList<>();
+            // We create to lists, one with the catalog entities and another for the sync error messages.
+            final List<DamCatalogEntity> damCatalogEntityList = new ArrayList<>();
+            final List<String> syncErrorMessageList = new ArrayList<>();
 
-        for (final PresasDto presasDto : presasDtoList) {
-            final DamCatalogEntity damCatalogEntity = new DamCatalogEntity(
-                    presasDto.getClavesih(),
-                    presasDto.getNombreoficial(),
-                    presasDto.getNombrecomun(),
-                    presasDto.getEstado(),
-                    presasDto.getNommunicipio(),
-                    presasDto.getRegioncna(),
-                    presasDto.getLatitud(),
-                    presasDto.getLongitud(),
-                    presasDto.getUso(),
-                    presasDto.getCorriente(),
-                    presasDto.getTipovertedor(),
-                    presasDto.getInicioop(),
-                    presasDto.getElevcorona(),
-                    presasDto.getBordolibre(),
-                    presasDto.getNameelev(),
-                    presasDto.getNamealmac(),
-                    presasDto.getAlturacortina());
+            //For every dam returned from the endpoint, let's create a damCatalogEntity
+            assert presasDtoList != null;
+            for (final PresasDto presasDto : presasDtoList) {
+                final DamCatalogEntity damCatalogEntity = new DamCatalogEntity(
+                        presasDto.getClavesih(),
+                        presasDto.getNombreoficial(),
+                        presasDto.getNombrecomun(),
+                        presasDto.getEstado(),
+                        presasDto.getNommunicipio(),
+                        presasDto.getRegioncna(),
+                        presasDto.getLatitud(),
+                        presasDto.getLongitud(),
+                        presasDto.getUso(),
+                        presasDto.getCorriente(),
+                        presasDto.getTipovertedor(),
+                        presasDto.getInicioop(),
+                        presasDto.getElevcorona(),
+                        presasDto.getBordolibre(),
+                        presasDto.getNameelev(),
+                        presasDto.getNamealmac(),
+                        presasDto.getAlturacortina());
 
-            if (damExistsBySihKey(damCatalogEntity.getSihKey())) {
-                if(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).isPresent()) { //TODO: I don't like this.
-                    damCatalogEntity.setId(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).get().getId());
+                // If the catalog entity already exists, update the catalog entity, if not, create a new one.
+                if (damExistsBySihKey(damCatalogEntity.getSihKey())) {
+                    damCatalogEntity.setId(getDamCatalogBySihKey(damCatalogEntity.getSihKey()).getId());
                     updateDamCatalog(damCatalogEntity);
-                }
-            } else {
-
-                try {
-                  damCatalogEntityList.add(createDamCatalog(damCatalogEntity));
-                } catch (IllegalArgumentException e) {
-                    log.info(e.getMessage());
-                    syncErrorMessageList.add(e.getMessage());
+                } else {
+                    try {
+                        damCatalogEntityList.add(createDamCatalog(damCatalogEntity));
+                    } catch (DamWithSihKeyAlreadyExistsException e) {
+                        log.info(e.getMessage());
+                        syncErrorMessageList.add(e.getMessage());
+                    }
                 }
             }
+
+            return Pair.of(damCatalogEntityList, syncErrorMessageList);
+
+        } catch (Exception ex) {
+            throw new SyncDamCatalogException("sync error.");
         }
-        return Pair.of(damCatalogEntityList, syncErrorMessageList);
     }
 
     /**
@@ -181,10 +192,16 @@ public class DamCatalogService {
      * @param sihKey the sihKey of the DamCatalogEntity to retrieve
      * @return an Optional containing the DamCatalogEntity, or an empty Optional if not found
      */
-    public Optional<DamCatalogEntity> getDamCatalogBySihKey(final String sihKey) {
+    public DamCatalogEntity getDamCatalogBySihKey(final String sihKey) throws ResourceNotFoundException {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
-        return damCatalogRepository.findBySihKey(sihKey);
+        Optional<DamCatalogEntity> optionalDamCatalogEntity = damCatalogRepository.findBySihKey(sihKey);
+
+        if (optionalDamCatalogEntity.isEmpty()) {
+            throw new ResourceNotFoundException(sihKey);
+        }
+
+        return optionalDamCatalogEntity.get();
     }
 
     /**
@@ -194,10 +211,16 @@ public class DamCatalogService {
      * @return The List of DamCatalogEntity objects that belong to the specified state.
      * @throws NullPointerException If the state parameter is null.
      */
-    public List<DamCatalogEntity> getDamCatalogByState(final String state) {
+    public List<DamCatalogEntity> getDamCatalogByState(final String state) throws ResourceNotFoundException {
         Objects.requireNonNull(state, "state" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
-        return List.copyOf(damCatalogRepository.findByState(state));
+        final List<DamCatalogEntity> damCatalogEntityList = damCatalogRepository.findByState(state);
+
+        if (damCatalogEntityList.isEmpty()) {
+            throw new ResourceNotFoundException(state);
+        }
+
+        return List.copyOf(damCatalogEntityList);
     }
 
     /**

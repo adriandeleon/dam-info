@@ -1,5 +1,7 @@
 package com.grokthecode.controllers.exceptions;
 
+import com.grokthecode.services.exceptions.ResourceNotFoundException;
+import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;

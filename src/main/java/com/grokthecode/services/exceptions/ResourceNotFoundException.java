@@ -1,4 +1,4 @@
-package com.grokthecode.controllers.exceptions;
+package com.grokthecode.services.exceptions;
 
 public class ResourceNotFoundException extends Exception{
 

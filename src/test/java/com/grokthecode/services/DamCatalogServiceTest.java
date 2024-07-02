@@ -2,9 +2,11 @@ package com.grokthecode.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grokthecode.services.exceptions.DamWithSihKeyAlreadyExistsException;
 import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
+import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +52,7 @@ public class DamCatalogServiceTest {
     }
 
     @Test
-    public void testCreateDamCatalog_WhenDamCatalogDoesNotExist() {
+    public void testCreateDamCatalog_WhenDamCatalogDoesNotExist() throws DamWithSihKeyAlreadyExistsException {
 
         //given
         final DamCatalogEntity damCatalogEntity = new DamCatalogEntity();
@@ -80,7 +81,7 @@ public class DamCatalogServiceTest {
                 .thenReturn(Optional.of(damCatalogEntity));
 
         //then
-        Assertions.assertThrows(IllegalArgumentException.class, () ->
+        Assertions.assertThrows(DamWithSihKeyAlreadyExistsException.class, () ->
                 damCatalogService.createDamCatalog(damCatalogEntity));
     }
 
@@ -155,7 +156,7 @@ public class DamCatalogServiceTest {
    }
    @Test
    @Disabled
-   public void testSyncDamsCatalog_WhenNewDamDataExists() throws URISyntaxException, JsonProcessingException {
+   public void testSyncDamsCatalog_WhenNewDamDataExists() throws JsonProcessingException, SyncDamCatalogException {
        //given
        final DamCatalogEntity damCatalogEntity1 = new DamCatalogEntity();
        damCatalogEntity1.setSihKey("newKey1");
@@ -184,7 +185,7 @@ public class DamCatalogServiceTest {
    }
    @Test
    @Disabled
-   public void testSyncDamsCatalog_WhenExistingDamDataUpdated() throws URISyntaxException {
+   public void testSyncDamsCatalog_WhenExistingDamDataUpdated() throws SyncDamCatalogException {
         //given
        final DamCatalogEntity damCatalogEntity1 = new DamCatalogEntity();
        damCatalogEntity1.setSihKey("existingKey1");

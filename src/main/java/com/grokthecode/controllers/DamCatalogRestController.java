@@ -1,27 +1,19 @@
 package com.grokthecode.controllers;
 
-import com.grokthecode.controllers.exceptions.ResourceNotFoundException;
-import com.grokthecode.controllers.exceptions.SyncDamCatalogException;
+import com.grokthecode.services.exceptions.ResourceNotFoundException;
+import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.responses.DamCatalogSyncResponse;
-import com.grokthecode.data.responses.HttpErrorResponse;
 import com.grokthecode.services.DamCatalogService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 @Log4j2
@@ -43,26 +35,14 @@ public class DamCatalogRestController {
     public ResponseEntity<DamCatalogEntity> getDamCatalogBySihKey(@PathVariable final String sihKey) throws ResourceNotFoundException {
         Objects.requireNonNull(sihKey, "sihKey cannot be null.");
 
-        final Optional<DamCatalogEntity> optionalDamCatalogEntity = damCatalogService.getDamCatalogBySihKey(sihKey);
-
-        if (optionalDamCatalogEntity.isEmpty()) {
-            throw new ResourceNotFoundException(sihKey);
-        }
-
-        return ResponseEntity.ok(optionalDamCatalogEntity.get());
+       return ResponseEntity.ok(damCatalogService.getDamCatalogBySihKey(sihKey));
     }
 
     @GetMapping("/api/dams/catalog/state/{state}")
-    public ResponseEntity<?> getDamCatalogByState(@PathVariable final String state) throws ResourceNotFoundException {
+    public ResponseEntity<List<DamCatalogEntity>> getDamCatalogByState(@PathVariable final String state) throws ResourceNotFoundException {
         Objects.requireNonNull(state, "state cannot be null.");
 
-        final List<DamCatalogEntity> damCatalogEntityList = damCatalogService.getDamCatalogByState(state);
-
-        if(damCatalogEntityList.isEmpty()) {
-            throw new ResourceNotFoundException(state);
-        }
-
-        return ResponseEntity.ok(damCatalogEntityList);
+        return ResponseEntity.ok(damCatalogService.getDamCatalogByState(state));
     }
 
     @GetMapping("/api/dams/catalog/sync")
