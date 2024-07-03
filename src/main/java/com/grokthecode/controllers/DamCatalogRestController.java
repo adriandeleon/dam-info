@@ -6,7 +6,6 @@ import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.responses.DamCatalogSyncResponse;
 import com.grokthecode.services.DamCatalogService;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,18 +46,10 @@ public class DamCatalogRestController {
 
     @GetMapping("/api/dams/catalog/sync")
     public ResponseEntity<DamCatalogSyncResponse> syncDamCatalog() throws SyncDamCatalogException {
-
-        final Pair<List<DamCatalogEntity>,List<String>> pairResponse;
-
         try {
-            pairResponse = damCatalogService.syncDamsCatalog();
-        } catch (Exception e) {
+            return ResponseEntity.ok(damCatalogService.syncDamsCatalog());
+        } catch (SyncDamCatalogException e) {
             throw new SyncDamCatalogException(e.getMessage());
         }
-
-        final DamCatalogSyncResponse damCatalogSyncResponse =
-                new DamCatalogSyncResponse(pairResponse.getLeft().size(), pairResponse.getLeft(), pairResponse.getRight());
-
-        return ResponseEntity.ok(damCatalogSyncResponse);
     }
 }

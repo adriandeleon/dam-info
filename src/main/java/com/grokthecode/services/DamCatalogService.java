@@ -1,6 +1,7 @@
 package com.grokthecode.services;
 
 import com.grokthecode.common.GlobalConstants;
+import com.grokthecode.data.responses.DamCatalogSyncResponse;
 import com.grokthecode.services.exceptions.DamWithSihKeyAlreadyExistsException;
 import com.grokthecode.services.exceptions.ResourceNotFoundException;
 import com.grokthecode.services.exceptions.SyncDamCatalogException;
@@ -82,7 +83,7 @@ public class DamCatalogService {
 
         final Optional<DamCatalogEntity> optionalDamCatalogEntity = getDamCatalogById(updatedDamCatalogEntity.getId());
 
-        if (optionalDamCatalogEntity.isEmpty()) {
+        if (optionalDamCatalogEntity.isEmpty()) { //TODO: Add a specific exception here.
             throw new IllegalArgumentException("Dam Catalog with id " + updatedDamCatalogEntity.getId() + " does not exist.");
         }
 
@@ -113,7 +114,7 @@ public class DamCatalogService {
      *
      * @return A pair of Lists containing the updated DAMS catalog entities and any synchronization error messages.
      */
-    public Pair<List<DamCatalogEntity>, List<String>> syncDamsCatalog() throws SyncDamCatalogException {
+    public DamCatalogSyncResponse syncDamsCatalog() throws SyncDamCatalogException {
 
         try {
             final RestClient restClient = RestClient.create();
@@ -167,7 +168,7 @@ public class DamCatalogService {
                 }
             }
 
-            return Pair.of(damCatalogEntityList, syncErrorMessageList);
+            return new DamCatalogSyncResponse(damCatalogEntityList.size(), damCatalogEntityList, syncErrorMessageList);
 
         } catch (Exception ex) {
             throw new SyncDamCatalogException("sync error.");

@@ -2,16 +2,13 @@ package com.grokthecode.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grokthecode.data.responses.DamCatalogSyncResponse;
 import com.grokthecode.services.exceptions.DamWithSihKeyAlreadyExistsException;
 import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
 import com.grokthecode.services.exceptions.SyncDamCatalogException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -28,6 +25,7 @@ import java.util.Optional;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+@Tag("UnitTest")
 @RestClientTest(DamCatalogService.class)
 public class DamCatalogServiceTest {
 
@@ -54,11 +52,11 @@ public class DamCatalogServiceTest {
     @Test
     public void testCreateDamCatalog_WhenDamCatalogDoesNotExist() throws DamWithSihKeyAlreadyExistsException {
 
-        //given
+        // Given
         final DamCatalogEntity damCatalogEntity = new DamCatalogEntity();
         damCatalogEntity.setSihKey("myKey");
 
-        //when
+        // When
         Mockito.when(damCatalogRepository.findBySihKey(Mockito.anyString()))
                 .thenReturn(Optional.empty());
         Mockito.when(damCatalogRepository.save(Mockito.any(DamCatalogEntity.class)))
@@ -66,61 +64,61 @@ public class DamCatalogServiceTest {
 
         final DamCatalogEntity result = damCatalogService.createDamCatalog(damCatalogEntity);
 
-        //then
+        // Then
         Assertions.assertEquals(damCatalogEntity, result);
     }
 
     @Test
     public void testCreateDamCatalog_WhenDamCatalogAlreadyExist() {
-        //given
+        // Given
         final DamCatalogEntity damCatalogEntity = new DamCatalogEntity();
         damCatalogEntity.setSihKey("test");
 
-        //when
+        // When
         Mockito.when(damCatalogRepository.findBySihKey(Mockito.anyString()))
                 .thenReturn(Optional.of(damCatalogEntity));
 
-        //then
+        // Then
         Assertions.assertThrows(DamWithSihKeyAlreadyExistsException.class, () ->
                 damCatalogService.createDamCatalog(damCatalogEntity));
     }
 
     @Test
     public void testListAllDams_WhenDamsExist() {
-        //given
+        // Given
         final DamCatalogEntity damCatalogEntity1 = new DamCatalogEntity();
         final DamCatalogEntity damCatalogEntity2 = new DamCatalogEntity();
 
         final List<DamCatalogEntity> damList = Arrays.asList(damCatalogEntity1, damCatalogEntity2);
 
-        //when
+        // When
         Mockito.when(damCatalogRepository.findAll())
                 .thenReturn(damList);
 
         final List<DamCatalogEntity> result = damCatalogService.listAllDams();
 
-        //then
+        // Then
         Assertions.assertEquals(damList.size(), result.size());
         Assertions.assertEquals(damList, result);
     }
 
     @Test
     public void testListAllDams_WhenNoDamsExist() {
-        //given
+        // Given
         final List<DamCatalogEntity> damList = new ArrayList<>();
 
-        //when
+        // When
         Mockito.when(damCatalogRepository.findAll())
                 .thenReturn(damList);
 
         final List<DamCatalogEntity> result = damCatalogService.listAllDams();
 
-        //then
+        // Then
         Assertions.assertEquals(damList.size(), result.size());
     }
     @Test
     public void testUpdateDamCatalog_WhenDamCatalogAlreadyExists() {
-        //given
+        // Given
         final DamCatalogEntity originalDamCatalogEntity = new DamCatalogEntity();
         final DamCatalogEntity updatedDamCatalogEntity = new DamCatalogEntity();
 
@@ -128,7 +126,7 @@ public class DamCatalogServiceTest {
         updatedDamCatalogEntity.setId(1L);
         updatedDamCatalogEntity.setOfficialName("UpdatedName");
 
-        //when
+        // When
         Mockito.when(damCatalogRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(originalDamCatalogEntity));
         Mockito.when(damCatalogRepository.save(Mockito.any(DamCatalogEntity.class)))
@@ -136,28 +134,28 @@ public class DamCatalogServiceTest {
 
         damCatalogService.updateDamCatalog(updatedDamCatalogEntity);
 
-        //then
+        // Then
         Assertions.assertEquals(updatedDamCatalogEntity.getOfficialName(), originalDamCatalogEntity.getOfficialName());
     }
 
    @Test
    public void testUpdateDamCatalog_WhenDamCatalogDoesNotExists() {
-       //given
+       // Given
        final DamCatalogEntity updatedDamCatalogEntity = new DamCatalogEntity();
        updatedDamCatalogEntity.setId(1L);
 
-       //when
+       // When
        Mockito.when(damCatalogRepository.findById(Mockito.anyLong()))
                .thenReturn(Optional.empty());
 
-       //then
+       // Then
        Assertions.assertThrows(IllegalArgumentException.class, () ->
                damCatalogService.updateDamCatalog(updatedDamCatalogEntity));
    }
    @Test
    @Disabled
    public void testSyncDamsCatalog_WhenNewDamDataExists() throws JsonProcessingException, SyncDamCatalogException {
-       //given
+       // Given
        final DamCatalogEntity damCatalogEntity1 = new DamCatalogEntity();
        damCatalogEntity1.setSihKey("newKey1");
        damCatalogEntity1.setOfficialName("newOfficialName1");
@@ -167,7 +165,7 @@ public class DamCatalogServiceTest {
        damCatalogEntity2.setOfficialName("newOfficialName2");
        final List<PresasDto> presasDtoList = new ArrayList<>();
 
-       //when
+       // When
        Mockito.when(damCatalogRepository.findBySihKey("newKey1")).thenReturn(Optional.empty());
        Mockito.when(damCatalogRepository.findBySihKey("newKey2")).thenReturn(Optional.empty());
        Mockito.when(damCatalogRepository.save(Mockito.any(DamCatalogEntity.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
@@ -175,18 +173,18 @@ public class DamCatalogServiceTest {
        mockServer.expect(requestTo(endpoint)).andRespond(withSuccess(objectMapper.writeValueAsString(presasDtoList), MediaType.APPLICATION_JSON));
 
        final List<DamCatalogEntity> initialDamList = damCatalogService.listAllDams();
-       final Pair<List<DamCatalogEntity>, List<String>> result = damCatalogService.syncDamsCatalog();
+       final DamCatalogSyncResponse damCatalogSyncResponse = damCatalogService.syncDamsCatalog();
        final List<DamCatalogEntity> finalDamList = damCatalogService.listAllDams();
 
-       //then
+       // Then
        Assertions.assertEquals(initialDamList.size() + 2, finalDamList.size());
-       Assertions.assertEquals(0, result.getRight().size());
-       Assertions.assertNotEquals(result.getLeft(), initialDamList);
+       Assertions.assertEquals(0, damCatalogSyncResponse.syncErrorMessageList().size());
+       Assertions.assertNotEquals(damCatalogSyncResponse.dailyMeasurementList(), initialDamList);
    }
    @Test
    @Disabled
    public void testSyncDamsCatalog_WhenExistingDamDataUpdated() throws SyncDamCatalogException {
-        //given
+        // Given
        final DamCatalogEntity damCatalogEntity1 = new DamCatalogEntity();
        damCatalogEntity1.setSihKey("existingKey1");
        damCatalogEntity1.setOfficialName("existingOfficialName1");
@@ -195,18 +193,19 @@ public class DamCatalogServiceTest {
        damCatalogEntity2.setSihKey("existingKey2");
        damCatalogEntity2.setOfficialName("existingOfficialName2");
 
-       //when
+       // When
        Mockito.when(damCatalogRepository.findBySihKey("existingKey1")).thenReturn(Optional.of(damCatalogEntity1));
        Mockito.when(damCatalogRepository.findBySihKey("existingKey2")).thenReturn(Optional.of(damCatalogEntity2));
        Mockito.when(damCatalogRepository.save(Mockito.any(DamCatalogEntity.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
        final List<DamCatalogEntity> initialDamList = damCatalogService.listAllDams();
-       final Pair<List<DamCatalogEntity>, List<String>> result = damCatalogService.syncDamsCatalog();
+       final DamCatalogSyncResponse damCatalogSyncResponse = damCatalogService.syncDamsCatalog();
+
        final List<DamCatalogEntity> finalDamList = damCatalogService.listAllDams();
 
-       //then
+       // Then
        Assertions.assertEquals(initialDamList.size(), finalDamList.size());
-       Assertions.assertEquals(0, result.getRight().size());
-       Assertions.assertNotEquals(result.getLeft(), initialDamList);
+       Assertions.assertEquals(0, damCatalogSyncResponse.syncErrorMessageList().size());
+       Assertions.assertNotEquals(damCatalogSyncResponse.dailyMeasurementList(), initialDamList);
    }
 }
