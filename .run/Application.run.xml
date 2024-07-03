@@ -4,7 +4,7 @@
     <envs>
       <env name="DB_HOSTNAME_DEV" value="db-postgresql-wedding-planner-do-user-16164236-0.c.db.ondigitalocean.com" />
       <env name="DB_NAME_DEV" value="damn-info-dev" />
-      <env name="DB_PASSWORD_DEV" value="AVNS_MO7dVQwN7_QIFBAb_oJ" />
+      <env name="DB_PASSWORD_DEV" value="" />
       <env name="DB_PORT_DEV" value="25060" />
       <env name="DB_USERNAME_DEV" value="doadmin" />
       <env name="SPRING_PROFILE" value="dev" />
