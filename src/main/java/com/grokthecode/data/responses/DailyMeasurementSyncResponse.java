@@ -4,5 +4,5 @@ import com.grokthecode.data.entities.DailyMeasurementEntity;
 
 import java.util.List;
 
-public record DailyMeasurementSyncResponse(Integer syncCount, List<DailyMeasurementEntity> dailyMeasurementList, List<String> syncErrorMessageList) {
+public record DailyMeasurementSyncResponse(String formatedDate, Integer syncCount, List<DailyMeasurementEntity> dailyMeasurementList, List<String> syncErrorMessageList) {
 }

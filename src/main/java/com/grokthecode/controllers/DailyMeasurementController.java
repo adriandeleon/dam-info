@@ -7,7 +7,6 @@ import com.grokthecode.data.responses.DailyMeasurementSyncResponse;
 import com.grokthecode.services.DailyMeasurementService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,6 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,28 +71,21 @@ public class DailyMeasurementController {
 
     @GetMapping("/api/dams/measurements/sync/date/today")
     public ResponseEntity<DailyMeasurementSyncResponse> syncDailyMeasurements() throws URISyntaxException {
-        final Pair<List<DailyMeasurementEntity>, List<String>> resultPair = dailyMeasurementService.syncDamsDailyFill(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        final DailyMeasurementSyncResponse dailyMeasurementSyncResponse =
-                new DailyMeasurementSyncResponse(resultPair.getLeft().size(), resultPair.getLeft(), resultPair.getRight());
 
-        return ResponseEntity.ok(dailyMeasurementSyncResponse);
+        return ResponseEntity.ok( dailyMeasurementService.syncDamsDailyFill(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
     }
 
     @GetMapping("/api/dams/measurements/sync/date/{formatedDate}")
-    public  ResponseEntity<DailyMeasurementSyncResponse> syncDailyMeasurements(@PathVariable(required = false) String formatedDate) throws URISyntaxException {
+    public  ResponseEntity<DailyMeasurementSyncResponse> syncDailyMeasurements(@PathVariable(required = false) String formatedDate)
+            throws URISyntaxException {
         Objects.requireNonNull(formatedDate, "formatedDate cannot be null.");
 
-        final Pair<List<DailyMeasurementEntity>, List<String>> resultPair = dailyMeasurementService.syncDamsDailyFill(formatedDate);
-
-        final DailyMeasurementSyncResponse dailyMeasurementSyncResponse =
-                new DailyMeasurementSyncResponse(resultPair.getLeft().size(), resultPair.getLeft(), resultPair.getRight());
-
-        return ResponseEntity.ok(dailyMeasurementSyncResponse);
+        return ResponseEntity.ok(dailyMeasurementService.syncDamsDailyFill(formatedDate));
     }
 
     @PostMapping("/api/dams/measurements/sync/dates")
     public  ResponseEntity<List<DailyMeasurementSyncResponse>> syncDailyMeasurements(@RequestBody DailyMeasurementDatesRequest dailyMeasurementDatesRequest) throws URISyntaxException {
-        Objects.requireNonNull(dailyMeasurementDatesRequest, "y cannot be null.");
+        Objects.requireNonNull(dailyMeasurementDatesRequest, "dailyMeasurementDatesRequest cannot be null.");
 
         final String startDate = dailyMeasurementDatesRequest.startDate();
         String endDate = dailyMeasurementDatesRequest.endDate();
@@ -102,14 +93,6 @@ public class DailyMeasurementController {
         if(StringUtils.isBlank(endDate) || endDate.equals("string")) {
             endDate = startDate;
         }
-
-        final List<Pair<List<DailyMeasurementEntity>, List<String>>> dailyMeasurementEntityList  = dailyMeasurementService.syncDamsDailyFill(startDate, endDate);
-        final List<DailyMeasurementSyncResponse> dailyMeasurementSyncResponseList = new ArrayList<>();
-
-        for (Pair<List<DailyMeasurementEntity>, List<String>> listListPair : dailyMeasurementEntityList) {
-            dailyMeasurementSyncResponseList.add(new DailyMeasurementSyncResponse(listListPair.getLeft().size(), listListPair.getLeft(), listListPair.getRight()));
-        }
-
-        return ResponseEntity.ok(dailyMeasurementSyncResponseList);
+        return ResponseEntity.ok(dailyMeasurementService.syncDamsDailyFill(startDate, endDate));
     }
 }

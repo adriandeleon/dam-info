@@ -5,10 +5,11 @@ import com.grokthecode.data.entities.DailyMeasurementEntity;
 import com.grokthecode.data.entities.DamCatalogEntity;
 import com.grokthecode.data.repositories.DailyMeasurementRepository;
 import com.grokthecode.data.repositories.DamCatalogRepository;
+import com.grokthecode.data.responses.DailyMeasurementSyncResponse;
 import com.grokthecode.models.restapi.PresasDto;
+import com.grokthecode.services.exceptions.DailyMeasurementAlreadyExistsException;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -51,13 +52,13 @@ public class DailyMeasurementService {
      * @param dailyMeasurementEntity the daily measurement entity
      * @return the daily measurement entity
      */
-    public DailyMeasurementEntity createDamDailyFill(final DailyMeasurementEntity dailyMeasurementEntity) {
+    public DailyMeasurementEntity createDamDailyMeasurement(final DailyMeasurementEntity dailyMeasurementEntity) throws DailyMeasurementAlreadyExistsException {
         Objects.requireNonNull(dailyMeasurementEntity, "dailyMeasurementEntity" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         //Check that the daily measurement does not exist.
         if ((dailyMesureExistsByDate(dailyMeasurementEntity.getDamCatalogEntity().getId(), dailyMeasurementEntity.getMeasurementDate()))) {
-            throw new IllegalArgumentException("Daily measurement with damId " + dailyMeasurementEntity.getDamCatalogEntity().getId() + " and " +
-                    "measurement date " + dailyMeasurementEntity.getMeasurementDate() + " already exists");
+            throw new DailyMeasurementAlreadyExistsException(dailyMeasurementEntity.getDamCatalogEntity().getId(),
+                    dailyMeasurementEntity.getMeasurementDate().toString());
         }
 
         return dailyMeasurementRepository.save(dailyMeasurementEntity);
@@ -146,9 +147,10 @@ public class DailyMeasurementService {
      * @return the pair
      * @throws URISyntaxException the uri syntax exception
      */
-    public Pair<List<DailyMeasurementEntity>, List<String>> syncDamsDailyFill(final String formatedDate) throws URISyntaxException {
+    public DailyMeasurementSyncResponse syncDamsDailyFill(final String formatedDate) throws URISyntaxException {
         Objects.requireNonNull(formatedDate, "formatedDate cannot be null or empty.");
 
+        // Call the endpoint to get the measurements
         final RestClient restClient = RestClient.create();
         final String endpoint = appDatasourceUrl + formatedDate;
 
@@ -156,13 +158,15 @@ public class DailyMeasurementService {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
 
+        // Create the new measurement and error lists.
         final List<DailyMeasurementEntity> dailyMeasurementEntityList = new ArrayList<>();
         final List<String> syncErrorMessageList = new ArrayList<>();
 
+        assert presasDtoList != null;
         for (final PresasDto presasDto : presasDtoList) {
             final Optional<DamCatalogEntity> optionalDamCatalogEntity = damCatalogRepository.findBySihKey(presasDto.getClavesih());
 
-            if (optionalDamCatalogEntity.isEmpty()) {
+            if (optionalDamCatalogEntity.isEmpty()) { //TODO: replace exception.
                 throw new IllegalArgumentException(" dam with SihKey " + presasDto.getClavesih() + " not found.");
             }
 
@@ -174,14 +178,15 @@ public class DailyMeasurementService {
                     optionalDamCatalogEntity.get()
             );
 
-            try {
-                dailyMeasurementEntityList.add(createDamDailyFill(dailyMeasureMentEntity));
-            } catch (IllegalArgumentException e) {
-                log.info(e.getMessage());
+            try { //Try to create a new daily measurement....
+                dailyMeasurementEntityList.add(createDamDailyMeasurement(dailyMeasureMentEntity));
+            } catch (DailyMeasurementAlreadyExistsException e) {
+                log.info(e.getMessage()); //If not, add to the sync error list.
                 syncErrorMessageList.add(e.getMessage());
             }
         }
-        return Pair.of(List.copyOf(dailyMeasurementEntityList), List.copyOf(syncErrorMessageList));
+
+        return new DailyMeasurementSyncResponse(formatedDate, dailyMeasurementEntityList.size(), dailyMeasurementEntityList, syncErrorMessageList);
     }
 
     /**
@@ -193,11 +198,11 @@ public class DailyMeasurementService {
      * @throws URISyntaxException     the uri syntax exception
      * @throws DateTimeParseException the date time parse exception
      */
-    public List<Pair<List<DailyMeasurementEntity>, List<String>>> syncDamsDailyFill(final String startDate, final String endDate) throws URISyntaxException, DateTimeParseException {
+    public List<DailyMeasurementSyncResponse> syncDamsDailyFill(final String startDate, final String endDate) throws URISyntaxException, DateTimeParseException {
         Objects.requireNonNull(startDate, "startDate cannot be null or empty.");
         Objects.requireNonNull(endDate, "endDate cannot be null or empty.");
 
-        final List<Pair<List<DailyMeasurementEntity>, List<String>>> dailyMeasurementEntityList = new ArrayList<>();
+        final List<DailyMeasurementSyncResponse> dailyMeasurementEntityList = new ArrayList<>();
 
         final LocalDate parsedStartDate =LocalDate.parse(startDate);
         final LocalDate parsedEndDate = LocalDate.parse(endDate);
