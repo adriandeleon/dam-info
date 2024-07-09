@@ -3,6 +3,7 @@ package com.grokthecode.services;
 import com.grokthecode.common.GlobalConstants;
 import com.grokthecode.data.responses.DamCatalogSyncResponse;
 import com.grokthecode.services.exceptions.DamWithSihKeyAlreadyExistsException;
+import com.grokthecode.services.exceptions.DamWithSihKeyDoesNotExistsException;
 import com.grokthecode.services.exceptions.ResourceNotFoundException;
 import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import com.grokthecode.data.entities.DamCatalogEntity;
@@ -10,7 +11,6 @@ import com.grokthecode.data.repositories.DamCatalogRepository;
 import com.grokthecode.models.restapi.PresasDto;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -193,13 +193,13 @@ public class DamCatalogService {
      * @param sihKey the sihKey of the DamCatalogEntity to retrieve
      * @return an Optional containing the DamCatalogEntity, or an empty Optional if not found
      */
-    public DamCatalogEntity getDamCatalogBySihKey(final String sihKey) throws ResourceNotFoundException {
+    public DamCatalogEntity getDamCatalogBySihKey(final String sihKey) throws DamWithSihKeyDoesNotExistsException {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);
 
         Optional<DamCatalogEntity> optionalDamCatalogEntity = damCatalogRepository.findBySihKey(sihKey);
 
         if (optionalDamCatalogEntity.isEmpty()) {
-            throw new ResourceNotFoundException(sihKey);
+            throw new DamWithSihKeyDoesNotExistsException(sihKey);
         }
 
         return optionalDamCatalogEntity.get();
@@ -225,10 +225,10 @@ public class DamCatalogService {
     }
 
     /**
-     * Checks if a DAM (Digital Asset Management) entry exists for the given SIH (System Identification Header) key.
+     * Checks if a DamEntity  entry exists for the given Sih key.
      *
      * @param sihKey the SIH key to check for DAM existence
-     * @return true if DAM entry exists for the given SIH key, false otherwise
+     * @return true if Dam entry exists for the given Sih key, false otherwise.
      */
     public boolean damExistsBySihKey(final String sihKey) {
         Objects.requireNonNull(sihKey, "sihKey" + GlobalConstants.MESSAGE_MUST_NOT_BE_NULL);

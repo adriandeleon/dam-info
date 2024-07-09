@@ -8,8 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -108,7 +106,7 @@ public class DamCatalogEntity extends AbstractEntity {
     @Column(name = "shadeHeight")
     private String shadeHeight;
 
-    @OneToMany(mappedBy = "damCatalogEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+/*    @OneToMany(mappedBy = "damCatalogEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<DailyMeasurementEntity> dailyMeasurementEntityList;
+    private List<DailyMeasurementEntity> dailyMeasurementEntityList;*/
 }

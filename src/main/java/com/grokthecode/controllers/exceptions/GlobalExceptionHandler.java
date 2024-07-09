@@ -1,5 +1,6 @@
 package com.grokthecode.controllers.exceptions;
 
+import com.grokthecode.services.exceptions.DamWithSihKeyDoesNotExistsException;
 import com.grokthecode.services.exceptions.ResourceNotFoundException;
 import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -36,9 +37,15 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return createErrorResponse(ex, webRequest, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(DamWithSihKeyDoesNotExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(DamWithSihKeyDoesNotExistsException ex, WebRequest webRequest) {
+        return createErrorResponse(ex, webRequest, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(SyncDamCatalogException.class)
     public ResponseEntity<Map<String, Object>> handleSyncDamCatalogException(SyncDamCatalogException ex, WebRequest webRequest) {
-        return createErrorResponse(ex, webRequest, HttpStatus.BAD_REQUEST);
+        return createErrorResponse(ex, webRequest, HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

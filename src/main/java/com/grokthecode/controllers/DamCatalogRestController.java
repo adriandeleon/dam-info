@@ -1,5 +1,6 @@
 package com.grokthecode.controllers;
 
+import com.grokthecode.services.exceptions.DamWithSihKeyDoesNotExistsException;
 import com.grokthecode.services.exceptions.ResourceNotFoundException;
 import com.grokthecode.services.exceptions.SyncDamCatalogException;
 import com.grokthecode.data.entities.DamCatalogEntity;
@@ -31,7 +32,7 @@ public class DamCatalogRestController {
     }
 
     @GetMapping("/api/dams/catalog/sihKey/{sihKey}")
-    public ResponseEntity<DamCatalogEntity> getDamCatalogBySihKey(@PathVariable final String sihKey) throws ResourceNotFoundException {
+    public ResponseEntity<DamCatalogEntity> getDamCatalogBySihKey(@PathVariable final String sihKey) throws DamWithSihKeyDoesNotExistsException {
         Objects.requireNonNull(sihKey, "sihKey cannot be null.");
 
        return ResponseEntity.ok(damCatalogService.getDamCatalogBySihKey(sihKey));
